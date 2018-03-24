@@ -48,4 +48,4 @@ const mapDispatchToProp = dispatch=>{
   }
 }
 
-export default connect( mapStateToProps, mapDispatchToProp )( App );  //asd
+export default connect( mapStateToProps, mapDispatchToProp )( App );  
