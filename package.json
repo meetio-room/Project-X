@@ -1,0 +1,42 @@
+{
+    "name": "com.test.authapp",
+    "displayName": "AuthApp",
+    "version": "1.0.0",
+    "description": "A sample Apache Cordova application that responds to the deviceready event.",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Apache Cordova Team",
+    "license": "Apache-2.0",
+    "dependencies": {
+        "@auth0/cordova": "^0.3.0",
+        "auth0-js": "^9.3.3",
+        "axios": "^0.18.0",
+        "cordova-android": "^7.0.0",
+        "cordova-plugin-background-mode": "^0.7.2",
+        "cordova-plugin-crosswalk-webview": "^2.4.0",
+        "cordova-plugin-customurlscheme": "^4.3.0",
+        "cordova-plugin-device": "^2.0.1",
+        "cordova-plugin-dialogs": "^2.0.1",
+        "cordova-plugin-googleplus": "^5.2.1",
+        "cordova-plugin-safariviewcontroller": "^1.5.3",
+        "cordova-plugin-whitelist": "1",
+        "cordova-plugin-x-toast": "^2.6.2"
+    },
+    "cordova": {
+        "plugins": {
+            "cordova-plugin-safariviewcontroller": {},
+            "cordova-plugin-customurlscheme": {
+                "URL_SCHEME": "com.test.AuthApp",
+                "ANDROID_SCHEME": "com.test.AuthApp",
+                "ANDROID_HOST": "reactappur12344.eu.auth0.com",
+                "ANDROID_PATHPREFIX": "C:/Program Files/Git/cordova/com.test.AuthApp/callback"
+            },
+            "cordova-plugin-whitelist": {}
+        },
+        "platforms": [
+            "android"
+        ]
+    }
+}

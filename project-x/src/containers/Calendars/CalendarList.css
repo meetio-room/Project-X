@@ -1,0 +1,21 @@
+.CalendarList{
+  width: 100%;
+  text-align: center;
+  height: 100vh;
+}
+.AddBtn{
+  padding: 10px 15px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(#84cc83e0,#5ca05c);
+  color: white;
+  font-size: 20px;
+  margin: 10px;
+  outline: none;
+}
+.newCalendarInput{
+  height: 31px;
+  border-radius: 5px;
+  font-size: 18px;
+  padding: 5px;
+}

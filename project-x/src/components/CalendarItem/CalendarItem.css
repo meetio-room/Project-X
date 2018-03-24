@@ -1,0 +1,17 @@
+.CalendarItem{
+  padding: 10px 12px;
+  margin: 15px 0;
+  text-align: left;
+  border: 1px solid grey;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.calendarName{
+  text-transform: capitalize;
+  font-size: 24px;
+  color: black;
+}
+.calendarId{
+  color: grey;
+  font-size: 14px;
+}

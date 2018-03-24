@@ -1,0 +1,161 @@
+.RoomStatus{
+  display: flex;
+  flex-direction: column;
+}
+
+.header{
+  height: 50vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 auto;
+  text-align: center;
+  width: 100%;
+}
+.header-Available{
+  background-color: rgb(13,149,5);
+}
+.header-Busy{
+  background-color: #B80000;
+}
+.header-Reserved{
+  background-color: #E9C20D;
+}
+
+.footer{
+  height: 50vh;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.footer-Available{
+  background-color: rgb(9,115,5);
+}
+.footer-Busy{
+  background-color: #780001;
+}
+.footer-Reserved{
+  background-color: 	#9A7F0C;
+}
+.container-Available,
+  .container-Reserved{
+    position: relative;
+    top: -20%;
+  }
+
+.status{
+  color: black;
+  font-size: 80px;
+  text-align: center;
+  padding: 7% 0 0;
+  z-index: 1;
+}
+.status-Busy{
+  color: white;
+  text-align: center;
+  padding: 0;
+  font-size: 30px;
+  width: 100%;
+}
+
+.EventStart{
+  font-size: 30px;
+  margin-top: -10px;
+  text-align: left;
+  z-index: 1;
+}
+
+.arrow{
+  height: 10px;
+  position: absolute;
+  top: 250px;
+  left: 62%;
+  z-index: 0;
+  font-size: 132px;
+  text-shadow: -1px 1px 20px;
+  transform: rotate(90deg);
+}
+.arrow-Available{
+  color: rgb(4,118,2);
+}
+.arrow-Reserved{
+  color: 	#8F8502;
+}
+
+.EventDuration{
+  font-size: 40px;
+  color: white;
+  margin-top: 25px;
+}
+.EventDuration span{
+  padding: 0 10px;
+}
+
+.clock{
+  color: white;
+  font-size: 80px;
+  text-align: center;
+  font-family: Garuda;
+  padding-bottom: 0;
+  z-index: 1;
+}
+
+.container{
+  width: 320px;
+  margin: 0 auto;  
+}
+.container-Busy{
+  width: 100%;
+}
+
+.btn{
+  color: black;
+  padding: 20px;
+  background-color: rgb(13,149,5);
+  font-size: 30px;
+  max-width: 67%;
+  border: 1px solid black;
+  border-radius: 3px;
+}
+.btn.btn-Busy{
+  background-color: #B80000;
+  padding: 20px 70px;
+}
+.btn-Reserved{
+  padding: 30px 10px;
+  background-color: #E9C20D;
+  font-size: 30px;
+  max-width: 75%;
+  border-radius: 3px;
+  border: 1px solid;
+}
+
+.description{
+  color: white;
+  margin: 3px;
+  font-size: 20px;
+}
+
+@media ( orientation: landscape ){
+  .RoomStatus{
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+  }
+  .header{
+    height: 100vh;
+    align-items: center;
+  }
+  .footer{
+    height: 100vh;
+  }
+  .arrow{
+    top: 275px;
+    left: 63%;
+  }
+  .status-Available, .status-Reserved {
+    padding: 30% 0 0;
+  }
+}
