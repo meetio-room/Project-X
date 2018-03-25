@@ -84,7 +84,7 @@ class EventBuilder extends Component {
         const isHasErrors = this.state.errors.eventEnd || this.state.errors.conflictEvents.length !== 0 
                               || this.state.errors.eventStart;
         if ( isHasErrors ) {
-          navigator.notification.alert( 'Room will be busy in this time\n Please select another time', null, 'Room Manager', 'OK' );
+          navigator.notification.alert( 'Room will be busy in this time\nPlease select another time', null, 'Room Manager', 'OK' );
           return;
         }
         this.props.createCalendarEvent( {...this.newEvent }, this.props.calendarId, this.props.token );

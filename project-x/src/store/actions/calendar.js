@@ -90,8 +90,8 @@ const showSpinner = show => {
   return {
     type: "SHOW_SPINNER",
     payload: show
-  }
-}
+  };
+};
 const saveCalendarEvents = ( events ) => {
   return {
     type: "LOAD_CALENDAR_EVENTS",

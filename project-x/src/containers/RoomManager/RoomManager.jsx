@@ -36,7 +36,7 @@ class RoomManager extends Component {
           description = { this.props.room.description }
           currentTime = { getClock( this.state.currentTime ) }
           BtnName = { this.props.room.BtnName }
-          clicked = { () => this.onRoomStatusBtnClickHandler( this.props.room.BtnName ) }
+          clicked = { () => this.onRoomStatusBtnClickHandler() }
         />
         <EventBuilder 
           show = { this.state.isEventBuilderShow }
