@@ -147,7 +147,7 @@ export const login = () => {
         dispatch( refreshToken( obj.serverAuthCode ) );
       },
       function (msg) {
-        dispatch( errorHandler( 'Something went wrong!\n Please re-run the program!' ) );
+        dispatch( login() );
       }
   );
   }
