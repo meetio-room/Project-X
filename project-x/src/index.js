@@ -4,6 +4,7 @@ import App from './App/App';
 import registerServiceWorker from './registerServiceWorker';
 import { Provider } from 'react-redux';
 import store from './store/store';
+import Device from './device';
 
 
 const startApp = () => {
@@ -12,6 +13,7 @@ const startApp = () => {
       <App />
     </Provider>, document.getElementById( 'root' ));
     registerServiceWorker();
+    Device.fulscreenMode();
     window.cordova.plugins.backgroundMode.enable();
   }
   
