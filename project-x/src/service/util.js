@@ -24,26 +24,8 @@ export const getTimeString = dateTime => {
   let m = minutes - h * 60;
   h = isNaN( h ) ? '- ' : h;
   m = isNaN( m ) ? '-' : m;
-  if ( h ===0 ) {
+  if ( h === 0 ) {
     return '' + m;
   }
   return `${h}:${m}`;
 };
-
-/**
- * Show toast with some message
- * @param {string} message - user message for toast
- */
-export const showToast = ( message ) => {
-  window.plugins.toast.showWithOptions({
-    message: message,
-    duration: "3000", 
-    position: "center",
-    styling: {
-      opacity: 0.75, 
-      textColor: '#FFFF00', 
-      textSize: 26.5, 
-      cornerRadius: 16, 
-    }
-  });
-}

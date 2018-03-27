@@ -1,3 +1,4 @@
+import * as config from './config.js';
 class Device {
 
   /**
@@ -25,17 +26,63 @@ class Device {
       }
     });
   }
+
   /**
+   * set Brightness for screen
+   * @param {float} value brightness of screen [0.0,... 1]
+   */
+  static setBrightness(value){
+    if (isNaN(value) || value > 1 || value < 0) return;
+    if (window.cordova.plugins.brightness) {
+      window.cordova.plugins.brightness.setBrightness(value);
+    }
+  }
+
+   /**
    * Set device mode (sleeped or active)
-   * @param {boolean} sleeped 
+   * @param {boolean} sleeped set devise to save mode
    */
   static setDeviceSleeping(sleeped){
     const WifiManager = window.cordova.plugins.WifiManager
     WifiManager.setWifiEnabled(!sleeped);
-   
+    
+    
     WifiManager.onwifistatechanged = function (data) {
       Device.showToast(`Wifi ${data.wifiState.toLocaleLowerCase()}!`);
     }
+    window.cordova.plugins.brightness.setKeepScreenOn(!sleeped);
+    if(sleeped){
+      Device.setBrightness(0);
+      window.screenLocker.lock();
+    } else {
+      window.screenLocker.unlock();
+      Device.setBrightness(0.6);      
+    }
+  }
+
+  /**
+   * Set device config for special mode
+   * @param {string} mode default IDLE_MODE ( SLEEP_MODE || ACTIVE_MODE || MIDDLE_MODE )
+   */
+  static setMode(mode){
+    switch(mode){
+      case 'SLEEP_MODE':{
+        Device.setDeviceSleeping(true);
+        break;
+      }
+      case 'ACTIVE_MODE': {
+        Device.setBrightness(config[mode].brightness);
+        break;
+      }
+      case 'MIDDLE_MODE': {
+        Device.setBrightness(config[mode].brightness);
+        break;
+      }
+      default: {
+        Device.setBrightness(config['IDLE_MODE'].brightness);
+      }
+    }    
+
   }
 }
 
