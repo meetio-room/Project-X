@@ -1,6 +1,4 @@
 import axios from 'axios';
-import * as config from '../../config';
-import { setTimeout } from 'timers';
 
 /**
 *  Select current calendar by id
@@ -146,7 +144,7 @@ export const login = () => {
     window.plugins.googleplus.login(
       {
         'scopes': 'profile email https://www.googleapis.com/auth/calendar https://www.google.com/calendar/feeds',
-        'webClientId': config.CLIENT_ID, 
+        'webClientId': process.env.REACT_APP_GOOGLE_CLIENT_ID, 
         'offline': true
       },
       function (obj) {
@@ -163,13 +161,13 @@ export const refreshToken = serverCode => {
   return dispatch => {
     let data = '';
     if( serverCode ) {
-      data = 'client_id=' + config.CLIENT_ID +
-      '&client_secret=' + config.CLIENT_SECRET +
+      data = 'client_id=' + process.env.REACT_APP_GOOGLE_CLIENT_ID +
+      '&client_secret=' + process.env.REACT_APP_GOOGLE_CLIENT_SECRET +
       '&grant_type=authorization_code' +
       '&code=' + serverCode;
     } else if ( localStorage.getItem( 'refreshToken' ) ) {
-       data = 'client_id=' + config.CLIENT_ID +
-      '&client_secret=' + config.CLIENT_SECRET +
+       data = 'client_id=' + process.env.REACT_APP_GOOGLE_CLIENT_ID +
+      '&client_secret=' + process.env.REACT_APP_GOOGLE_CLIENT_SECRET +
       '&grant_type=refresh_token' +
       '&refresh_token=' + localStorage.getItem( 'refreshToken' ); 
     }
@@ -276,7 +274,7 @@ export const createCalendar = ( calendarName, access_token ) => {
       })
     );
     })
-    .catch( () => dispatch( errorHandler( 'Calendar doesn`t created\n Please re-run the program!' ) ) );
+    .catch( (e) => dispatch(errorHandler('Please enable network connection!') ) );
   }
 }
 
@@ -322,7 +320,7 @@ export const createCalendar = ( calendarName, access_token ) => {
         };
         dispatch( saveEvent( newEvent ) );
       } )
-      .catch( () => dispatch( errorHandler( 'Event doesn`t created\n Please re-run the program!' ) ) );
+      .catch( () => dispatch( errorHandler( 'Event doesn`t created\nPlease re-run the program!' ) ) );
   };
 };
 

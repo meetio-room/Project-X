@@ -5,6 +5,7 @@ import registerServiceWorker from './registerServiceWorker';
 import { Provider } from 'react-redux';
 import store from './store/store';
 import Device from './device';
+require('dotenv').config();
 
 
 const startApp = () => {
