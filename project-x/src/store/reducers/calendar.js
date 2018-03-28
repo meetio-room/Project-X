@@ -1,5 +1,6 @@
 /* global localStorage */
-import { showToast } from '../../service/util';
+import Device from '../../device.js';
+
 const initialState = {
   allCalendars: [],
   currentCalendar: localStorage.getItem( 'calendarId' ) || '',
@@ -101,7 +102,7 @@ export default function calendar( state = initialState, action ) {
         } else {
           events.push( { ...action.payload } );
         }
-        showToast( 'Event added!' );
+        Device.showToast( 'Event added!' );
       return {
         ...state,
         currentCalendarEvents: events,

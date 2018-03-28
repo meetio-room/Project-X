@@ -1,5 +1,6 @@
 import axios from 'axios';
 import * as config from '../../config';
+import { setTimeout } from 'timers';
 
 /**
 *  Select current calendar by id
@@ -129,13 +130,19 @@ const loadCalendarsFromGoogle = access_token =>{
       dispatch( createCalendarsList( calendars ) );
     }).catch( () =>{
        dispatch( showSpinner( false ) )
-       dispatch( errorHandler( 'Something went wrong!\n Please re-run the program!' ) );
+       dispatch( errorHandler( 'Something went wrong!\nPlease re-run the program!' ) );
       });
   }
 }
 
 export const login = () => {
   return dispatch => {
+    if (navigator.connection.type === window.Connection.NONE){
+      setTimeout( () => {
+        dispatch(errorHandler('Please enable network connection!'));
+        dispatch(login());
+      },1500);
+    } else {
     window.plugins.googleplus.login(
       {
         'scopes': 'profile email https://www.googleapis.com/auth/calendar https://www.google.com/calendar/feeds',
@@ -149,7 +156,7 @@ export const login = () => {
       function (msg) {
         dispatch( login() );
       }
-  );
+  );}
   }
 }
 export const refreshToken = serverCode => {
