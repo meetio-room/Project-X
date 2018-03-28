@@ -54,11 +54,11 @@ class CalendarList extends Component {
           <input
             placeholder = "enter name for calendar"
             type = "text"
-            ref = { inp => ( this.newCalendarInput = inp ) }
+            ref = { inp => this.newCalendarInput = inp }
             className = "newCalendarInput" />
           : null }
         <button
-          onClick = { this.onAddCalendarClickHandler }
+           onClick = {this.onAddCalendarClickHandler } 
           className = "AddBtn" >
            +
         </button>

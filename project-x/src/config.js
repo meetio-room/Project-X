@@ -3,7 +3,7 @@ export const CLIENT_SECRET = 'Mm7wPY3n6R_i3KqSBarMyPbJ';
 
 export let version = '1.0.0';
 export const SLEEP_MODE = {
-  start: 18, // 18pm
+  start: 18, // 18pm-0am
   end: 9  // 9am
 } 
 export const IDLE_MODE = { // min action

@@ -51,47 +51,60 @@ class RoomManager extends Component {
 
   componentDidMount() {
     const that = this;
-    const syncStep = 60; 
+    const syncStep = 60;
+    let deviceMode = '';
     this.timer = setInterval( () => {
       if ( !window.cordova.plugins.backgroundMode.isEnabled()){
         window.cordova.plugins.backgroundMode.enable();
       }
 
       let tokenExpires = localStorage.getItem( 'expires_in' );
-      if ( that.props.currentCalendar ) {
+      if ( that.props.currentCalendar && navigator.connection.type !== window.Connection.NONE ) {
         that.props.loadCalenadarEvents( that.props.currentCalendar, that.props.token );
       }
       if ( tokenExpires ) {
         tokenExpires -= syncStep;
-        if ( tokenExpires <= 0 ) { // refresh token
+        if ( tokenExpires <= 0 && navigator.connection.type !== window.Connection.NONE ) { // refresh token
           that.props.updateToken();
         }
         localStorage.setItem('expires_in', tokenExpires);
       }
-
-      const time = this.state.currentTime;
-      const timeToEvent = Date.parse(that.props.events[0].start)-time;
-      if(time.getHours() <= config.SLEEP_MODE.start || time.getHours() >= config.SLEEP_MODE.end ){
-        alert('Sleep');
-        Device.setMode('SLEEP_MODE');
-      } else if ( that.props.room.status === 'Busy' ){
-        alert('ACTIVE_MODE');
-        Device.setMode('ACTIVE_MODE');
-      } else if ( timeToEvent < config.MIDDLE_MODE.timeToStart * 60 * 1000 && timeToEvent > 0 ) {
-        alert('MIDDLE_MODE');
-        Device.setMode('MIDDLE_MODE');
-      } else {
-        alert('IDLE_MODE');
-        Device.setMode('IDLE_MODE');
-      }
-
     }, syncStep * 1000 );
 
     this.clock = setInterval( () => { //every seconds
-      const t = new Date();
-      if ( that.state.currentTime.getMinutes() !== t.getMinutes() ) {
-        that.setState( { currentTime: t } );
+      const time = new Date();
+      if ( that.state.currentTime.getMinutes() !== time.getMinutes() ) {
+        that.setState( { currentTime: time } );
       }
+
+      const timeToEvent = (Date.parse(that.props.events[0].start)||Infinity)-time;
+      if(time.getHours() < config.SLEEP_MODE.end || time.getHours() >= config.SLEEP_MODE.start ){
+        if(deviceMode !== 'SLEEP_MODE'){
+          Device.setMode('SLEEP_MODE');
+          deviceMode = 'SLEEP_MODE'
+        }
+      } else if(that.props.events.length === 0) {
+        if(deviceMode !== 'IDLE_MODE'){
+          Device.setMode('IDLE_MODE');
+          deviceMode = 'IDLE_MODE'
+        }
+      } else if ( that.props.room.status === 'Busy' ){
+        if(deviceMode !== 'ACTIVE_MODE'){
+          Device.setMode('ACTIVE_MODE');
+          deviceMode = 'ACTIVE_MODE'
+        }
+      } else if ( timeToEvent < config.MIDDLE_MODE.timeToStart * 60 * 1000 && timeToEvent > 0 ) {
+        if(deviceMode !== 'MIDDLE_MODE'){
+          Device.setMode('MIDDLE_MODE');
+          deviceMode = 'MIDDLE_MODE'
+        }
+      } else {
+        if(deviceMode !== 'IDLE_MODE'){
+          Device.setMode('IDLE_MODE');
+          deviceMode = 'IDLE_MODE'
+        }
+      }
+
       that.props.loadCurrentState( that.props.events[0] );
     }, 1000 );
   }

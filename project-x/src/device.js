@@ -46,7 +46,6 @@ class Device {
     const WifiManager = window.cordova.plugins.WifiManager
     WifiManager.setWifiEnabled(!sleeped);
     
-    
     WifiManager.onwifistatechanged = function (data) {
       Device.showToast(`Wifi ${data.wifiState.toLocaleLowerCase()}!`);
     }
@@ -55,8 +54,7 @@ class Device {
       Device.setBrightness(0);
       window.screenLocker.lock();
     } else {
-      window.screenLocker.unlock();
-      Device.setBrightness(0.6);      
+      window.screenLocker.unlock();    
     }
   }
 
@@ -71,18 +69,20 @@ class Device {
         break;
       }
       case 'ACTIVE_MODE': {
+        Device.setDeviceSleeping(false);
         Device.setBrightness(config[mode].brightness);
         break;
       }
       case 'MIDDLE_MODE': {
+        Device.setDeviceSleeping(false);
         Device.setBrightness(config[mode].brightness);
         break;
       }
       default: {
+        Device.setDeviceSleeping(false);
         Device.setBrightness(config['IDLE_MODE'].brightness);
       }
     }    
-
   }
 }
 
