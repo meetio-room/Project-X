@@ -25,39 +25,42 @@ class RoomManager extends Component {
   setEventBuilderVisibility = show => {
     this.setState( { isEventBuilderShow: show } );
   }
-
+  onScreenClickHandler = () => {
+    Device.setMode('MIDDLE_MODE');
+    Device.quinaryClick(()=>alert('future settings window!'));
+  }
+  
   render() {
     return (
-      <div onClick={()=>Device.quinaryClick(()=>alert('future settings window!'))} >
-        <RoomStatus 
-          status = { this.props.room.status } 
-          eventName = { this.props.room.eventName } 
-          timeEventBegin = { getClock( this.props.room.timeStart ) } 
-          timeEventFinish = { getClock( this.props.room.timeEnd ) }
-          timeToNextEvent = { getTimeString( this.props.room.timeToNextEvent ) } 
-          description = { this.props.room.description }
-          currentTime = { getClock( this.state.currentTime ) }
-          BtnName = { this.props.room.BtnName }
-          clicked = { () => this.onRoomStatusBtnClickHandler() }
-        />
-        <EventBuilder 
-          show = { this.state.isEventBuilderShow }
-          hideEventBuilder = { () => this.setEventBuilderVisibility( false ) }
-        />
-
+      <div onClick={ this.onScreenClickHandler } >
+      <RoomStatus 
+      status = { this.props.room.status } 
+      eventName = { this.props.room.eventName } 
+      timeEventBegin = { getClock( this.props.room.timeStart ) } 
+      timeEventFinish = { getClock( this.props.room.timeEnd ) }
+      timeToNextEvent = { getTimeString( this.props.room.timeToNextEvent ) } 
+      description = { this.props.room.description }
+      currentTime = { getClock( this.state.currentTime ) }
+      BtnName = { this.props.room.BtnName }
+      clicked = { () => this.onRoomStatusBtnClickHandler() }
+      />
+      <EventBuilder 
+      show = { this.state.isEventBuilderShow }
+      hideEventBuilder = { () => this.setEventBuilderVisibility( false ) }
+      />
+      
       </div>
     );
   }
-
+  
   componentDidMount() {
     const that = this;
     const syncStep = 60;
-    let deviceMode = '';
     this.timer = setInterval( () => {
       if ( !window.cordova.plugins.backgroundMode.isEnabled()){
         window.cordova.plugins.backgroundMode.enable();
       }
-
+      
       let tokenExpires = localStorage.getItem( 'expires_in' );
       if ( that.props.currentCalendar && navigator.connection.type !== window.Connection.NONE ) {
         that.props.loadCalenadarEvents( that.props.currentCalendar, that.props.token );
@@ -70,36 +73,22 @@ class RoomManager extends Component {
         localStorage.setItem('expires_in', tokenExpires);
       }
     }, syncStep * 1000 );
-
+    
     this.clock = setInterval( () => { //every seconds
       const time = new Date();
       if ( that.state.currentTime.getMinutes() !== time.getMinutes() ) {
         that.setState( { currentTime: time } );
-      }
-
-      const timeToEvent = that.props.events.length>0? Date.parse(that.props.events[0].start)-time : 10e12 ;
-      if(time.getHours() < config.SLEEP_MODE.end || time.getHours() >= config.SLEEP_MODE.start ){
-        if(deviceMode !== 'SLEEP_MODE'){
+        const timeToEvent = that.props.events.length>0? Date.parse(that.props.events[0].start)-time : 10e12 ;
+        if(time.getHours() < config.SLEEP_MODE.end || time.getHours() >= config.SLEEP_MODE.start ){
           Device.setMode('SLEEP_MODE');
-          deviceMode = 'SLEEP_MODE'
-        }
-      }  else if ( that.props.room.status === 'Busy' ){
-        if(deviceMode !== 'ACTIVE_MODE'){
+        }  else if ( that.props.room.status === 'Busy' ){
           Device.setMode('ACTIVE_MODE');
-          deviceMode = 'ACTIVE_MODE'
-        }
-      } else if ( timeToEvent < config.MIDDLE_MODE.timeToStart * 60 * 1000 && timeToEvent > 0 ) {
-        if(deviceMode !== 'MIDDLE_MODE'){
+        } else if ( timeToEvent < config.MIDDLE_MODE.timeToStart * 60 * 1000 && timeToEvent > 0 ) {
           Device.setMode('MIDDLE_MODE');
-          deviceMode = 'MIDDLE_MODE'
-        }
-      } else {
-        if(deviceMode !== 'IDLE_MODE'){
+        } else {
           Device.setMode('IDLE_MODE');
-          deviceMode = 'IDLE_MODE'
         }
       }
-
       that.props.loadCurrentState( that.props.events[0] );
     }, 1000 );
   }

@@ -1,7 +1,7 @@
 import * as config from './config.js';
 class Device {
  static clickCounter = 0;
-
+ static currentDeviceMode = '';
   /**
   * AutoHide navigation bar
   */
@@ -64,24 +64,29 @@ class Device {
    * @param {string} mode default IDLE_MODE ( SLEEP_MODE || ACTIVE_MODE || MIDDLE_MODE )
    */
   static setMode(mode){
+    if(mode === Device.currentDeviceMode) return;
     switch(mode){
       case 'SLEEP_MODE':{
         Device.setDeviceSleeping(true);
+        Device.currentDeviceMode = 'SLEEP_MODE';
         break;
       }
       case 'ACTIVE_MODE': {
         Device.setDeviceSleeping(false);
         Device.setBrightness(config[mode].brightness);
+        Device.currentDeviceMode = 'ACTIVE_MODE';
         break;
       }
       case 'MIDDLE_MODE': {
         Device.setDeviceSleeping(false);
         Device.setBrightness(config[mode].brightness);
+        Device.currentDeviceMode = 'MIDDLE_MODE';
         break;
       }
       default: {
         Device.setDeviceSleeping(false);
         Device.setBrightness(config['IDLE_MODE'].brightness);
+        Device.currentDeviceMode = 'IDLE_MODE';
       }
     }    
   }
@@ -93,6 +98,9 @@ class Device {
    */
   static quinaryClick(callback){
     Device.clickCounter++;
+    if(Device.clickCounter===1){
+      Device.setMode('ACTIVE_MODE');
+    }
     if(Device.clickCounter===5){
       callback();
       Device.clickCounter=0;

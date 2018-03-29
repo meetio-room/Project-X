@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import Device from '../../device';
 /**
 *  Select current calendar by id
 * @param {string} id - calendar id 
@@ -137,7 +137,7 @@ export const login = () => {
   return dispatch => {
     if (navigator.connection.type === window.Connection.NONE){
       setTimeout( () => {
-        dispatch(errorHandler('Please enable network connection!'));
+        Device.showToast('Please enable network!');
         dispatch(login());
       },1500);
     } else {
