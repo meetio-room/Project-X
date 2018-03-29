@@ -1,5 +1,6 @@
 import * as config from './config.js';
 class Device {
+ static clickCounter = 0;
 
   /**
   * AutoHide navigation bar
@@ -83,6 +84,22 @@ class Device {
         Device.setBrightness(config['IDLE_MODE'].brightness);
       }
     }    
+  }
+
+  //Events
+  /**
+   * Run function after 5 times touch
+   * @param {function} callback 
+   */
+  static quinaryClick(callback){
+    Device.clickCounter++;
+    if(Device.clickCounter===5){
+      callback();
+      Device.clickCounter=0;
+    }
+    setTimeout(()=>{
+      Device.clickCounter=0;
+    },3000);
   }
 }
 

@@ -28,7 +28,7 @@ class RoomManager extends Component {
 
   render() {
     return (
-      <div >
+      <div onClick={()=>Device.quinaryClick(()=>alert('future settings window!'))} >
         <RoomStatus 
           status = { this.props.room.status } 
           eventName = { this.props.room.eventName } 
@@ -78,7 +78,6 @@ class RoomManager extends Component {
       }
 
       const timeToEvent = that.props.events.length>0? Date.parse(that.props.events[0].start)-time : 10e12 ;
-      Device.showToast(deviceMode);
       if(time.getHours() < config.SLEEP_MODE.end || time.getHours() >= config.SLEEP_MODE.start ){
         if(deviceMode !== 'SLEEP_MODE'){
           Device.setMode('SLEEP_MODE');
