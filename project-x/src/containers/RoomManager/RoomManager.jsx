@@ -4,7 +4,6 @@ import RoomStatus from '../../components/RoomStatusWidget/RoomStatus';
 import EventBuilder from '../EventBuilder/EventBuilder';
 import { connect } from 'react-redux';
 import { loadEvents, loadCurrentEvent, refreshToken } from '../../store/actions/calendar';
-import { getClock, getTimeString } from '../../service/util';
 import Device from '../../device';
 import * as config from '../../config';
 import Setting from '../Settings/Settings';
@@ -43,11 +42,11 @@ class RoomManager extends Component {
       <RoomStatus 
       status = { this.props.room.status } 
       eventName = { this.props.room.eventName } 
-      timeEventBegin = { getClock( this.props.room.timeStart ) } 
-      timeEventFinish = { getClock( this.props.room.timeEnd ) }
-      timeToNextEvent = { getTimeString( this.props.room.timeToNextEvent ) } 
+      timeEventBegin = { this.props.room.timeStart } 
+      timeEventFinish = { this.props.room.timeEnd }
+      timeToNextEvent = { this.props.room.timeToNextEvent } 
       description = { this.props.room.description }
-      currentTime = { getClock( this.state.currentTime ) }
+      currentTime = { this.state.currentTime }
       BtnName = { this.props.room.BtnName }
       clicked = { () => this.onRoomStatusBtnClickHandler() }
       />
@@ -104,7 +103,6 @@ class RoomManager extends Component {
     clearInterval( this.clock );
   }
 }
-
 
 const mapStateToProps = state => {
   return {

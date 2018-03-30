@@ -1,5 +1,6 @@
 import React from 'react';
 import './RoomStatus.css';
+import { getClock, getTimeString } from '../../service/util';
 
 /**
  * Use: <RoomStatus status="" eventName="" timeEventBegin="" timeEventFinish="" description="" currentTime="" timeToNextEvent="" clicked={} BtnName="" />
@@ -23,16 +24,14 @@ const roomStatus = props => {
   }
 
   let timeToEvent = '';
-  let time = props.timeToNextEvent.split( ':' );
-  
-  if ( props.timeToNextEvent === '0' ) {
+  let time = props.timeToNextEvent;
+
+  if ( getTimeString(props.timeToNextEvent) === '0' ) {
     timeToEvent = 'less than 1 minute';
-  } else if ( props.timeToNextEvent === '- :-' ) { 
-    timeToEvent = 'no planned events'; 
-  } else if ( time.length === 2 && +time[0] > 24 ) {
-    timeToEvent = 'for today';
+  } else if ( getTimeString(props.timeToNextEvent)  === '- :-'  || time > 864e5 ) {
+    timeToEvent = 'free for today';
   } else {
-    timeToEvent = `for ${props.timeToNextEvent.replace( ':', 'h ' )} min`;
+    timeToEvent = (<span>the nearest time in <br/>{`${getTimeString(props.timeToNextEvent).replace( ':', 'h ' )} min`}</span> );
   }
 
   return (
@@ -43,9 +42,9 @@ const roomStatus = props => {
           { props.status === 'Busy' ?
             <div>
               <div className = "EventDuration" >
-                { props.timeEventBegin }
+                {getClock(props.timeEventBegin) }
                 <span>-</span>
-                { props.timeEventFinish }
+                { getClock(props.timeEventFinish) }
               </div>
               <p className = "description" > { props.description } </p>
             </div>
@@ -61,7 +60,7 @@ const roomStatus = props => {
 
       <div className = { `footer footer-${props.status}`} >
         <div className = "container" >
-          <div className = "clock" > { props.currentTime } </div>
+         <div className = "clock" > { getClock(props.currentTime) } </div>
           <button
             to = "/newEvent"
             onClick = { props.clicked } 
