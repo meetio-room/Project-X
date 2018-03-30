@@ -1,4 +1,6 @@
-export let version = '1.0.0';
+export const VERSION = '1.0.0';
+export const PROGRAM_NAME = 'Room Manager';
+
 export const SLEEP_MODE = {
   start: 18, // 18pm-0am
   end: 9  // 9am

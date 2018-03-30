@@ -7,13 +7,15 @@ import { loadEvents, loadCurrentEvent, refreshToken } from '../../store/actions/
 import { getClock, getTimeString } from '../../service/util';
 import Device from '../../device';
 import * as config from '../../config';
+import Setting from '../Settings/Settings';
 
 class RoomManager extends Component {
   constructor( props ) {
     super( props );
     this.state = {
       currentTime: new Date(),
-      isEventBuilderShow: false
+      isEventBuilderShow: false,
+      isSettingsShow: false
     };
     this.timer = null;
     this.clock = null;
@@ -27,7 +29,12 @@ class RoomManager extends Component {
   }
   onScreenClickHandler = () => {
     Device.setMode('MIDDLE_MODE');
-    Device.quinaryClick(()=>alert('future settings window!'));
+    Device.quinaryClick(()=>{
+      this.setState({isSettingsShow: true});
+    });
+  }
+  hideSettings = () => {
+    this.setState({isSettingsShow: false});
   }
   
   render() {
@@ -48,7 +55,7 @@ class RoomManager extends Component {
       show = { this.state.isEventBuilderShow }
       hideEventBuilder = { () => this.setEventBuilderVisibility( false ) }
       />
-      
+      <Setting show ={this.state.isSettingsShow} hideWindow = {this.hideSettings}/>
       </div>
     );
   }

@@ -1,0 +1,38 @@
+.Settings{
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  height: 100vh;
+  flex-direction: column;
+  background: white;
+}
+.Settings h3{
+  background-color: #2C363C;
+  padding: 20px;
+  color: white;
+  margin-top: 0;
+}
+.Settings-content{
+  padding: 0 20px;
+}
+.btn-refresh{
+  padding: 10px 20px 10px 45px;
+  font-size: 20px;
+  border: none;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: #e4dada82;
+  outline: none;
+  border-radius: 3px;
+}
+.btn-close{
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  padding: 10px 20px;
+  font-size: 25px;
+  border: none;
+}
