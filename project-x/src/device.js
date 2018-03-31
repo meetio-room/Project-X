@@ -102,15 +102,15 @@ class Device {
         navigator.camera.getPicture(onSuccess, onFail, 
           { 
             quality: 50,
-            destinationType: window.Camera.DestinationType.FILE_URI,
+            destinationType: window.Camera.DestinationType.DATA_URL,
             encodingType: window.Camera.EncodingType.PNG,
             cameraDirection: 1,
-            targetWidth: 100,
-            targetHeight: 100,           
+            targetWidth: 200,
+            targetHeight: 200,           
           });
           
           function onSuccess(image) {
-            resolve(image)
+            resolve(image);
           }
           
           function onFail(message) {
