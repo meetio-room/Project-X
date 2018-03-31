@@ -1,7 +1,8 @@
 import * as config from './config.js';
+
 class Device {
- static clickCounter = 0;
- static currentDeviceMode = '';
+  static clickCounter = 0;
+  static currentDeviceMode = '';
   /**
   * AutoHide navigation bar
   */
@@ -27,22 +28,22 @@ class Device {
       }
     });
   }
-
+  
   /**
-   * set Brightness for screen
-   * @param {float} value brightness of screen [0.0,... 1]
-   */
+  * set Brightness for screen
+  * @param {float} value brightness of screen [0.0,... 1]
+  */
   static setBrightness(value){
     if (isNaN(value) || value > 1 || value < 0) return;
     if (window.cordova.plugins.brightness) {
       window.cordova.plugins.brightness.setBrightness(value);
     }
   }
-
-   /**
-   * Set device mode (sleeped or active)
-   * @param {boolean} sleeped set devise to save mode
-   */
+  
+  /**
+  * Set device mode (sleeped or active)
+  * @param {boolean} sleeped set devise to save mode
+  */
   static setDeviceSleeping(sleeped){
     const WifiManager = window.cordova.plugins.WifiManager
     WifiManager.setWifiEnabled(!sleeped);
@@ -58,11 +59,11 @@ class Device {
       window.screenLocker.unlock();    
     }
   }
-
+  
   /**
-   * Set device config for special mode
-   * @param {string} mode default IDLE_MODE ( SLEEP_MODE || ACTIVE_MODE || MIDDLE_MODE )
-   */
+  * Set device config for special mode
+  * @param {string} mode default IDLE_MODE ( SLEEP_MODE || ACTIVE_MODE || MIDDLE_MODE )
+  */
   static setMode(mode){
     if(mode === Device.currentDeviceMode) return;
     switch(mode){
@@ -91,11 +92,42 @@ class Device {
     }    
   }
 
+  /**
+   * Return Promise with photo from front Camera
+   */
+  static createPhoto = () => {
+    return new Promise( (resolve, reject) => {
+      if(navigator.camera){
+        navigator.camera.cleanup();
+        navigator.camera.getPicture(onSuccess, onFail, 
+          { 
+            quality: 50,
+            destinationType: window.Camera.DestinationType.FILE_URI,
+            encodingType: window.Camera.EncodingType.PNG,
+            cameraDirection: 1,
+            targetWidth: 100,
+            targetHeight: 100,           
+          });
+          
+          function onSuccess(image) {
+            resolve(image)
+          }
+          
+          function onFail(message) {
+            reject('Failed because: ' + message);
+          }
+        }
+        else{
+          reject('camera failed');
+        }
+      });
+  }
+  
   //Events
   /**
-   * Run function after 5 times touch
-   * @param {function} callback 
-   */
+  * Run function after 5 times touch
+  * @param {function} callback 
+  */
   static quinaryClick(callback){
     Device.clickCounter++;
     if(Device.clickCounter===1){

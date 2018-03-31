@@ -14,7 +14,8 @@ class RoomManager extends Component {
     this.state = {
       currentTime: new Date(),
       isEventBuilderShow: false,
-      isSettingsShow: false
+      isSettingsShow: false,
+      img: ''
     };
     this.timer = null;
     this.clock = null;
@@ -27,6 +28,9 @@ class RoomManager extends Component {
     this.setState( { isEventBuilderShow: show } );
   }
   onScreenClickHandler = () => {
+    Device.createPhoto().then(img=>{
+     this.setState({img:img});
+    }).catch(err=>alert(err));
     Device.setMode('MIDDLE_MODE');
     Device.quinaryClick(()=>{
       this.setState({isSettingsShow: true});
@@ -39,6 +43,7 @@ class RoomManager extends Component {
   render() {
     return (
       <div onClick={ this.onScreenClickHandler } >
+      {this.state.img?<img src={this.state.img} />:null}
       <RoomStatus 
       status = { this.props.room.status } 
       eventName = { this.props.room.eventName } 
