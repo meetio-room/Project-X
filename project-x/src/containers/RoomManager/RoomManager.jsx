@@ -7,6 +7,7 @@ import { loadEvents, loadCurrentEvent, refreshToken } from '../../store/actions/
 import Device from '../../device';
 import * as config from '../../config';
 import Setting from '../Settings/Settings';
+import {comparePhoto,insertPhotoToGallery} from '../../store/actions/rekognize';
 
 class RoomManager extends Component {
   constructor( props ) {
@@ -22,28 +23,37 @@ class RoomManager extends Component {
   }
   
   onRoomStatusBtnClickHandler = () => {
-    this.setEventBuilderVisibility( true );
+    Device.createPhoto().then(img=>{
+      this.props.insertPhotoToGallery(img,'Dmytro Roik');
+      this.setState({img:img});
+     }).catch(err=>alert(err));
+//    this.setEventBuilderVisibility( true );
   }
   setEventBuilderVisibility = show => {
     this.setState( { isEventBuilderShow: show } );
   }
   onScreenClickHandler = () => {
-    Device.createPhoto().then(img=>{
-     this.setState({img:img});
-    }).catch(err=>alert(err));
+    
     Device.setMode('MIDDLE_MODE');
     Device.quinaryClick(()=>{
       this.setState({isSettingsShow: true});
     });
   }
   hideSettings = () => {
-    this.setState({isSettingsShow: false});
+    this.setState({isSettingsShow: false});  
+  }
+  onSaveImgClick = () => {
+    Device.createPhoto().then(img=>{
+      Device.showToast('compared...');
+      this.props.comparePhoto1(img);
+     }).catch(err=>alert(err));
   }
   
   render() {
     return (
       <div onClick={ this.onScreenClickHandler } >
       {this.state.img?<img src={this.state.img} />:null}
+      <button onClick={this.onSaveImgClick}>Save</button>
       <RoomStatus 
       status = { this.props.room.status } 
       eventName = { this.props.room.eventName } 
@@ -121,7 +131,9 @@ const mapDispatchToProps = dispatch => {
   return {
     loadCalenadarEvents: ( calendarId, token ) => dispatch( loadEvents( calendarId, token ) ),
     loadCurrentState: event => dispatch( loadCurrentEvent( event ) ),
-    updateToken: () => dispatch( refreshToken() )
+    updateToken: () => dispatch( refreshToken() ),
+    comparePhoto1: (src) => dispatch( comparePhoto(src)),
+    insertPhotoToGallery: (src,username) => dispatch(insertPhotoToGallery(src,username))
   };
 };
 
