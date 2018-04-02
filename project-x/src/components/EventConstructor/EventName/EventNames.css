@@ -1,0 +1,38 @@
+.EventNames {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.EventName-item{
+  padding: 10px 0;
+  margin: 20px;
+  background: yellow;
+  border: none;
+  font-weight: bold;
+  font-size: 20px;
+  text-transform: capitalize;
+  border-radius: 15px;
+  width: 130px;
+  text-align: center;
+}
+.EventName-item-active{
+  background: #0a0303!important;
+  color: white;
+  border: 5px solid red!important;
+  padding: 10px!important;
+}
+.inputFileds{
+  width: 100%;
+  text-align: center;
+}
+.inputFileds input{
+  height: 40px;
+  border-radius: 7px;
+  font-size: 20px;
+  text-align: center;
+}
+.inputFileds label {
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+}

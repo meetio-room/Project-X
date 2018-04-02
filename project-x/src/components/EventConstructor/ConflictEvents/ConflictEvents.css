@@ -1,0 +1,32 @@
+.conflicts h3{
+  margin-bottom: 5px;
+  text-align: center;
+  color: white;
+  font-size: 30px;
+  margin-top: 20px;
+}
+.conflicts-container{
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  list-style: none;
+}
+.conflicts-item{
+  color: white;
+  border: 2px solid red;
+  border-radius: 20px;
+  padding: 11px 20px;
+  margin: 5px;
+  text-align: center;
+}
+.conflicts-item-name{
+  color: red;
+  font-weight: 800;
+  font-size: 22px;
+  text-transform: capitalize;
+}
+.conflicts-item-time{
+  font-size: 18px;
+  display: block;
+}

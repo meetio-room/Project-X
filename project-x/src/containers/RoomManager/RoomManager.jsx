@@ -21,19 +21,18 @@ class RoomManager extends Component {
     this.timer = null;
     this.clock = null;
   }
-  
+
   onRoomStatusBtnClickHandler = () => {
-    Device.createPhoto().then(img=>{
-      this.props.insertPhotoToGallery(img,'Dmytro Roik');
-      this.setState({img:img});
-     }).catch(err=>alert(err));
-//    this.setEventBuilderVisibility( true );
+    // Device.createPhoto().then(img=>{
+    //   this.props.insertPhotoToGallery(img,'Dmytro Roik');
+    //   this.setState({img:img});
+    //  }).catch(err=>alert(err));
+    this.setEventBuilderVisibility( true );
   }
   setEventBuilderVisibility = show => {
     this.setState( { isEventBuilderShow: show } );
   }
   onScreenClickHandler = () => {
-    
     Device.setMode('MIDDLE_MODE');
     Device.quinaryClick(()=>{
       this.setState({isSettingsShow: true});
@@ -42,18 +41,18 @@ class RoomManager extends Component {
   hideSettings = () => {
     this.setState({isSettingsShow: false});  
   }
-  onSaveImgClick = () => {
-    Device.createPhoto().then(img=>{
-      Device.showToast('compared...');
-      this.props.comparePhoto1(img);
-     }).catch(err=>alert(err));
-  }
+  // onSaveImgClick = () => {
+  //   Device.createPhoto().then(img=>{
+  //     Device.showToast('compared...');
+  //     this.props.comparePhoto1(img);
+  //    }).catch(err=>alert(err));
+  // }
   
   render() {
     return (
       <div onClick={ this.onScreenClickHandler } >
-      {this.state.img?<img src={this.state.img} />:null}
-      <button onClick={this.onSaveImgClick}>Save</button>
+      {/* {this.state.img?<img src={this.state.img} />:null}
+      <button onClick={this.onSaveImgClick}>Save</button> */}
       <RoomStatus 
       status = { this.props.room.status } 
       eventName = { this.props.room.eventName } 

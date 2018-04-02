@@ -1,0 +1,34 @@
+.EventDuration{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.EventDuration-item{
+  padding: 10px 0;
+  margin: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 15px;
+  background: #ab1414;
+  border: none;
+  text-transform: capitalize;
+  width: 130px;
+  text-align: center;
+}
+.EventDuration-item-active{
+  background: #0a0303!important;
+  color: white;
+  border: 5px solid red!important;
+  padding: 10px!important;
+}
+input#event-start,
+input#event-end {
+  color: white!important;
+  font-size: 20px!important;
+}
+label[for="event-start"],
+label[for="event-end"]
+{
+  color: rgba(255, 255, 255, 0.6)!important;
+  font-size: 20px!important;
+}
