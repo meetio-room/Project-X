@@ -34,9 +34,19 @@ const roomStatus = props => {
   } else {
     timeToEvent = (<span>the nearest time in <br/>{`${getTimeString(props.timeToNextEvent).replace( ':', 'h ' )} min`}</span> );
   }
-  let timeToFinish = getTimeString(props.timeEventFinish - moment()).replace(':', 'h ');
-  if( timeToFinish.trim() === '0' ) timeToFinish = ((props.timeEventFinish - moment())/1000).toFixed() + 1 + ' seconds';
-  else timeToFinish = timeToFinish + ' minutes';
+
+  let tToEnd = props.timeEventFinish - moment();
+  let timeToFinish = getTimeString(tToEnd).replace(':', 'h ');
+  if(tToEnd > 1000){
+    if( timeToFinish.trim() === '0' ){
+      let temp = (tToEnd / 1000).toFixed();
+      if( temp >= 1) timeToFinish = temp + ' seconds';
+      else timeToFinish = 0 + ' seconds';
+    } else timeToFinish = timeToFinish + ' minutes';
+  } else if (isNaN(tToEnd) || tToEnd < 0) {
+    timeToFinish = 0;
+  }
+ 
 
   return (
     <div className = "RoomStatus" >
