@@ -56,8 +56,9 @@
   color: white;
   text-align: center;
   padding: 0;
-  font-size: 28px;
+  font-size: 40px;
   width: 100%;
+  text-transform: capitalize;
 }
 
 .EventStart{
@@ -85,7 +86,7 @@
 }
 
 .EventDuration{
-  font-size: 40px;
+  font-size: 26px;
   color: white;
   margin-top: 25px;
 }
@@ -120,6 +121,7 @@
   border-radius: 3px;
 }
 .btn.btn-Busy{
+  display: none;
   background-color: #B80000;
   padding: 20px 70px;
 }

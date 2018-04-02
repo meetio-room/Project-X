@@ -19,7 +19,7 @@ class EventBuilder extends Component {
       
       eventNames: ['call','conference'],
       eventStarts: ['now',`+${this.deltaHours}min`,`+${this.deltaHours + 30}min`, `+${this.deltaHours + 60}min`],
-      eventDurations:['5min', '15min', '30min', '45min','60min', '90min'],
+      eventDurations:['5min', '30min','60min', '90min'],
       
       activeName: '',
       activeEvStart: '',
@@ -158,25 +158,29 @@ class EventBuilder extends Component {
         return;
       }
       this.props.createCalendarEvent( this.newEvent, this.props.calendarId, this.props.token );
-      this.setState({
-        activeName: '',
-        activeEvStart: '',
-        activeEvDuration: '',
-      });
-      this.props.hideEventBuilder();
-      this.newEvent={};
+      this.closeEventBuilder();
     } else {
       alert( 'Please choose time for event!' );
     }
   }
 
+  closeEventBuilder(){
+    this.setState({
+      activeName: '',
+      activeEvStart: '',
+      activeEvDuration: '',
+      errors: {}
+    });
+    this.props.hideEventBuilder();
+    this.newEvent={};
+  }
 
   render() {
     if ( this.props.show === false ) {
       return null;
     }
     return (
-      <div className = "EventBuilder" onDoubleClick={this.props.hideEventBuilder} >
+      <div className = "EventBuilder" onDoubleClick={() => this.closeEventBuilder()} >
         <ConflictEvents error={this.state.errors}/>
         <h2>Please choose event type</h2>
         <EventNames 

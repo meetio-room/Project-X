@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import './RoomStatus.css';
 import { getClock, getTimeString } from '../../service/util';
 
@@ -33,6 +34,9 @@ const roomStatus = props => {
   } else {
     timeToEvent = (<span>the nearest time in <br/>{`${getTimeString(props.timeToNextEvent).replace( ':', 'h ' )} min`}</span> );
   }
+  let timeToFinish = getTimeString(props.timeEventFinish - moment()).replace(':', 'h ');
+  if( timeToFinish.trim() === '0' ) timeToFinish = ((props.timeEventFinish - moment())/1000).toFixed() + 1 + ' seconds';
+  else timeToFinish = timeToFinish + ' minutes';
 
   return (
     <div className = "RoomStatus" >
@@ -42,11 +46,8 @@ const roomStatus = props => {
           { props.status === 'Busy' ?
             <div>
               <div className = "EventDuration" >
-                {getClock(props.timeEventBegin) }
-                <span>-</span>
-                { getClock(props.timeEventFinish) }
+                { `will finish in ${timeToFinish}` }
               </div>
-              <p className = "description" > { props.description } </p>
             </div>
             : <div>
               <div className = "EventStart" >
