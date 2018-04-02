@@ -1,0 +1,28 @@
+.RekognizeRegistry form{
+  display: flex;
+  flex-direction: column;
+  width: 280px;
+  border: 1px solid #BD9D9A;
+  margin-top: 13px;
+  padding: 0 10px 10px 10px;
+  border-radius: 8px;
+  background-color: #BD9D9A;
+}
+.RekognizeRegistry form input{
+  padding: 10px;
+  font-size: 20px;
+}
+.RekognizeRegistry form::before{
+  content: '';
+  width: 20px;
+  height: 20px;
+  background-color: #bd9d9d;
+  transform: rotateZ(45deg);
+  position: relative;
+  top: -10px;
+  left: 30px;
+}
+.RekognizeRegistry form button{
+  padding: 20px;
+  font-size: 20px;
+}

@@ -1,5 +1,4 @@
 import axios from 'axios';
-const APP_ID = '259f785d';
 const KEY = '65d0f21dead2effda11fb22e570aca05';
 
 export const insertPhotoToGallery = (imageSrc,username) => {
@@ -10,8 +9,8 @@ export const insertPhotoToGallery = (imageSrc,username) => {
       subject_id: username
     }, {
       headers: {
-        app_id: APP_ID, 
-        app_key: KEY
+        app_id: process.env.REACT_APP_KAIRO_APP_ID, 
+        app_key: process.env.REACT_APP_KAIRO_KEY
       }
     }).then((response) => {
       alert(JSON.stringify(response));
@@ -28,8 +27,8 @@ export const clearGallery = () => {
     gallery_name: "newRoomManagerGallery"
     }, {
       headers: {
-        app_id: APP_ID,
-        app_key: KEY
+        app_id: process.env.REACT_APP_KAIRO_APP_ID,
+        app_key: process.env.REACT_APP_KAIRO_KEY
       }
     }).then((response) => {
       alert('Gallery has been reset. Feel free to register now');
@@ -43,13 +42,12 @@ export const comparePhoto = imageSrc => {
     gallery_name: 'newRoomManagerGallery',
     image: imageSrc
     }, {
-      // enter your secret credentials
       headers: {
-        app_id: APP_ID,
-        app_key: KEY
+        app_id: process.env.REACT_APP_KAIRO_APP_ID,
+        app_key: process.env.REACT_APP_KAIRO_KEY
       }
     }).then((response) => {
-      alert(JSON.stringify(response));
+      alert(JSON.stringify(response.data.images[0].candidates[0].subject_id));
       //this.props.recognizeUser(response.data);
     }).catch((error) => {
      alert(JSON.stringify(error));

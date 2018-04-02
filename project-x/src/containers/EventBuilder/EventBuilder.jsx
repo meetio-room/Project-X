@@ -4,9 +4,12 @@ import EventNames from '../../components/EventConstructor/EventName/EventNames';
 import EventStarts from '../../components/EventConstructor/EventTimeStart/EventStarts';
 import EventDuration from '../../components/EventConstructor/EventDuration/EventDuration';
 import ConflictEvents from '../../components/EventConstructor/ConflictEvents/ConflictEvents';
+import CameraIcon  from 'react-icons/lib/fa/camera'
 import moment from 'moment';
+import Device from '../../device';
 import { connect } from 'react-redux';
 import { createEvent } from '../../store/actions/calendar';
+import {comparePhoto} from '../../store/actions/rekognize';
 import './EventBuilder.css';
 
 class EventBuilder extends Component {
@@ -164,6 +167,13 @@ class EventBuilder extends Component {
     }
   }
 
+  identificateUser = () => {
+    Device.createPhoto().then(img=>{
+      Device.showToast('compared...');
+      this.props.compPhoto(img);
+     }).catch(err=>alert(err));
+  }
+
   closeEventBuilder(){
     this.setState({
       activeName: '',
@@ -213,7 +223,7 @@ class EventBuilder extends Component {
           customClick = {this.onCustomEvDurationItemClickHandler}
           showCustom = { this.state.customEvDuration }
           />
-
+        <button className="btn-confirm" onClick = { this.identificateUser }><CameraIcon/> Identify</button>
         <button className="btn-confirm" onClick = { this.onConfirmClickHandler }>Confirm</button>
       </div>
     );
@@ -245,7 +255,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     createCalendarEvent: ( event, calendarId, access_token ) =>
-      dispatch( createEvent( event, calendarId, access_token ) )
+      dispatch( createEvent( event, calendarId, access_token ) ),
+    compPhoto: src => dispatch(comparePhoto(src)),
   };
 };
 export default connect( mapStateToProps, mapDispatchToProps )( EventBuilder );

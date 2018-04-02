@@ -11,7 +11,7 @@
 }
 .Settings h3{
   background-color: #2C363C;
-  padding: 20px;
+  padding:  10px 20px;
   color: white;
   margin-top: 0;
 }
@@ -27,6 +27,23 @@
   background-color: #e4dada82;
   outline: none;
   border-radius: 3px;
+}
+.rekognize-section{
+
+}
+.Settings-title{
+  display: block;
+  font-size: 24px;
+  font-style: italic;
+  margin-top: 10px;
+}
+.btn-rekognize{
+  padding: 10px;
+  font-size: 20px;
+  width: 95px;
+  border: 1px solid #c7c2c2;
+  margint: 5px;
+  margin: 5px;
 }
 .btn-close{
   position: absolute;
