@@ -23,10 +23,6 @@ class RoomManager extends Component {
   }
 
   onRoomStatusBtnClickHandler = () => {
-    // Device.createPhoto().then(img=>{
-    //   this.props.insertPhotoToGallery(img,'Dmytro Roik');
-    //   this.setState({img:img});
-    //  }).catch(err=>alert(err));
     this.setEventBuilderVisibility( true );
   }
   setEventBuilderVisibility = show => {
@@ -41,18 +37,10 @@ class RoomManager extends Component {
   hideSettings = () => {
     this.setState({isSettingsShow: false});  
   }
-  // onSaveImgClick = () => {
-  //   Device.createPhoto().then(img=>{
-  //     Device.showToast('compared...');
-  //     this.props.comparePhoto1(img);
-  //    }).catch(err=>alert(err));
-  // }
   
   render() {
     return (
       <div onClick={ this.onScreenClickHandler } >
-      {/* {this.state.img?<img src={this.state.img} />:null}
-      <button onClick={this.onSaveImgClick}>Save</button> */}
       <RoomStatus 
       status = { this.props.room.status } 
       eventName = { this.props.room.eventName } 
@@ -99,7 +87,7 @@ class RoomManager extends Component {
       if ( that.state.currentTime.getMinutes() !== time.getMinutes() ) {
         that.setState( { currentTime: time } );
         const timeToEvent = that.props.events.length>0? Date.parse(that.props.events[0].start)-time : 10e12 ;
-        if(time.getHours() < config.SLEEP_MODE.end || time.getHours() >= config.SLEEP_MODE.start ){
+        if( Device.saveModeEnable && (time.getHours() < config.SLEEP_MODE.end || time.getHours() >= config.SLEEP_MODE.start )){
           Device.setMode('SLEEP_MODE');
         }  else if ( that.props.room.status === 'Busy' ){
           Device.setMode('ACTIVE_MODE');

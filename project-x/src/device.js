@@ -1,8 +1,13 @@
 import * as config from './config.js';
 
 class Device {
-  static clickCounter = 0;
+  //public
+  static saveModeEnable = JSON.parse(localStorage.getItem('saveModeON')) || true;
   static currentDeviceMode = '';
+
+  //private
+  static _clickCounter = 0;
+  
   /**
   * AutoHide navigation bar
   */
@@ -65,7 +70,7 @@ class Device {
   * @param {string} mode default IDLE_MODE ( SLEEP_MODE || ACTIVE_MODE || MIDDLE_MODE )
   */
   static setMode(mode){
-    if(mode === Device.currentDeviceMode) return;
+    if( mode === Device.currentDeviceMode) return;
     switch(mode){
       case 'SLEEP_MODE':{
         Device.setDeviceSleeping(true);
@@ -129,16 +134,16 @@ class Device {
   * @param {function} callback 
   */
   static quinaryClick(callback){
-    Device.clickCounter++;
-    if(Device.clickCounter===1){
+    Device._clickCounter++;
+    if(Device._clickCounter === 1){
       Device.setMode('ACTIVE_MODE');
     }
-    if(Device.clickCounter===5){
+    if(Device._clickCounter===5){
       callback();
-      Device.clickCounter=0;
+      Device._clickCounter=0;
     }
     setTimeout(()=>{
-      Device.clickCounter=0;
+      Device._clickCounter=0;
     },3000);
   }
 }
