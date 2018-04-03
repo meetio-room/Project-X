@@ -1,4 +1,3 @@
-/* global alert */
 import React, { Component } from 'react';
 import EventNames from '../../components/EventConstructor/EventName/EventNames';
 import EventStarts from '../../components/EventConstructor/EventTimeStart/EventStarts';
@@ -23,6 +22,7 @@ class EventBuilder extends Component {
       
       activeName: '',
       activeEvStart: '',
+      activeEvStartId: '',
       activeEvDuration: '',
 
       customNameShow: false,
@@ -55,9 +55,11 @@ class EventBuilder extends Component {
     } else if ( id === 'event-end' ) {
       this.newEvent.end = dateTime;
       if(!this.newEvent.start){
-        this.newEvent.start = moment();
-        
-        this.setState({activeEvStart:'now'});
+        this.newEvent.start = moment(); 
+        this.setState({
+          activeEvStart:'now',
+          activeEvStartId: 0
+        });
       }
     }
     this.checkEventErrors();
@@ -107,8 +109,10 @@ class EventBuilder extends Component {
     });
   }
   
-  onEvStartItemClickHandler = sender => {
-    this.setState({activeEvStart: sender});
+  onEvStartItemClickHandler = (sender, index) => {
+    this.setState({
+      activeEvStart: sender,
+      activeEvStartId: index});
     let curTime = moment();
     let delta = sender.replace('+','').replace('min', '');
     if (sender === 'now'){
@@ -122,8 +126,11 @@ class EventBuilder extends Component {
   }
   
   onCustomEvStartItemClickHandler = sender => {
-    this.setState({activeEvStart: sender});
-    this.setState((prevState,prevProps)=>{
+    this.setState({
+      activeEvStart: sender,
+      activeEvStartId: ''
+    });
+    this.setState((prevState, prevProps)=>{
       return { customEvStart: !prevState.customEvStart }
     });
   }
@@ -133,7 +140,10 @@ class EventBuilder extends Component {
     let duration = sender.replace('min','');
     if(!this.newEvent.start){
       this.newEvent.start = moment();
-      this.setState({activeEvStart:'now'});
+      this.setState({
+        activeEvStart: 'now',
+        activeEvStartId: 0
+      });
     }
     this.newEvent.end = moment(this.newEvent.start).add(duration, 'minutes');
     this.checkEventErrors();
@@ -150,17 +160,20 @@ class EventBuilder extends Component {
     if(!this.newEvent.summary){
       this.newEvent.summary = 'Event';
     }
+    if(this.activeEvStart === 'now'){
+      this.newEvent.start = moment();
+    }
     if ( this.newEvent.start && this.newEvent.end ) {
       const isHasErrors = this.state.errors.eventEnd || this.state.errors.conflictEvents.length !== 0 
                             || this.state.errors.eventStart;
       if ( isHasErrors ) {
-        alert( 'Room will be busy in this time\n Please select another time' );
+        navigator.notification.alert( 'Room will be busy in this time\n Please select another time', null, 'Room Manager', 'OK' );
         return;
       }
       this.props.createCalendarEvent( this.newEvent, this.props.calendarId, this.props.token );
       this.closeEventBuilder();
     } else {
-      alert( 'Please choose time for event!' );
+      navigator.notification.alert( 'Please choose time for event!', null, 'Room Manager', 'OK' );
     }
   }
 
@@ -169,6 +182,7 @@ class EventBuilder extends Component {
       activeName: '',
       activeEvStart: '',
       activeEvDuration: '',
+      activeEvStartId: '',
       errors: {}
     });
     this.props.hideEventBuilder();
@@ -196,6 +210,7 @@ class EventBuilder extends Component {
         <h2>Please select the start of event</h2>
         <EventStarts
           active = {this.state.activeEvStart}
+          activeId = {this.state.activeEvStartId}
           itemClick = {this.onEvStartItemClickHandler}
           eventStart = {this.state.eventStarts}
           changeDateTime = {this.onChangeDateTimeHandler} 
@@ -220,14 +235,14 @@ class EventBuilder extends Component {
   }
 
   componentDidMount(){
-    const that = this
+    const that = this;
     that.timer=setInterval(()=>{
       that.deltaHours = 60 - moment().minute();
       if(that.deltaHours > 30) that.deltaHours -= 30;
       that.setState({
         eventStarts: ['now',`+${that.deltaHours}min`,`+${that.deltaHours + 30}min`, `+${that.deltaHours + 60}min`]
       });
-    })
+    },1000);
   }
 
   componentWillUnmount(){

@@ -10,17 +10,17 @@ const eventStarts=(props)=>{
   <MuiThemeProvider>
     <div className="EventStarts">
     {
-      props.eventStart.map(start=>{
+      props.eventStart.map( (start, index)=>{
         return <button 
-          className={ props.active !== start ? "EventStart-item": "EventStart-item  EventStart-item-active"}
-          onClick = {(e) => {
-            props.itemClick(start);
+          className={ props.activeId!==index? 'EventStart-item': 'EventStart-item  EventStart-item-active'}
+          onClick = { () => {
+            props.itemClick(start, index);
           }}
           >{start}</button>
       })
     }
     <button onClick={() => props.customClick('custom')} 
-      className={ props.active !== 'custom' ? "EventStart-item": "EventStart-item  EventStart-item-active"}
+      className={ props.active !== 'custom' ? 'EventStart-item': 'EventStart-item  EventStart-item-active'}
       >custom</button>
     { props.showCustom?
       <div className = "inputFileds" >

@@ -138,9 +138,9 @@ class Device {
     if(Device._clickCounter === 1){
       Device.setMode('ACTIVE_MODE');
     }
-    if(Device._clickCounter===5){
+    if(Device._clickCounter === 5){
       callback();
-      Device._clickCounter=0;
+      Device._clickCounter = 0;
     }
     setTimeout(()=>{
       Device._clickCounter=0;
