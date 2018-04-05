@@ -1,16 +1,15 @@
-import React,{Component} from 'react';
+import React, { Component } from 'react';
 import './Settings.css';
 import * as config from '../../config';
 import refreshBg from '../../images/refresh.png';
-import { connect } from 'react-redux';
 import Device from '../../device';
 
-class Settings extends Component{
-  constructor(props){
+class Settings extends Component {
+  constructor(props) {
     super(props);
     this.state = {
-      saveModeEnable: JSON.parse(localStorage.getItem('saveModeON')) || true,
-    }
+      saveModeEnable: JSON.parse(localStorage.getItem('saveModeON')),
+    };
   }
   onRefreshBtnClickHandler = () => {
     localStorage.removeItem('accessToken');
@@ -25,13 +24,13 @@ class Settings extends Component{
       Device.saveModeEnable = !oldState.saveModeEnable;
       localStorage.setItem('saveModeON', !oldState.saveModeEnable);
       return {
-        saveModeEnable: !oldState.saveModeEnable
+        saveModeEnable: !oldState.saveModeEnable,
       };
     });
   }
 
-  render(){
-    if(!this.props.show) return null;
+  render() {
+    if (!this.props.show) return null;
     return (
       <div className="Settings">
         <h3>Settings</h3>
@@ -41,31 +40,27 @@ class Settings extends Component{
           <hr/>
           <div>
           <label class="switch">
-            { this.state.saveModeEnable? <input type="checkbox" id="saveModeCheck" onChange={this.updateCheck} checked/> 
-              :<input type="checkbox" id="saveModeCheck" onChange={this.updateCheck}/> 
+            { this.state.saveModeEnable ? <input type="checkbox" id="saveModeCheck" onChange={this.updateCheck} checked/>
+              : <input type="checkbox" id="saveModeCheck" onChange={this.updateCheck}/>
             }
             <span class="slider round"></span>
           </label>
-           <label 
+           <label
             htmlFor="saveModeCheck"
             style={{
-              position:'relative', 
-              top:'-10px',
+              position: 'relative',
+              top: '-10px',
               left: '5px',
-              'font-size': '20px'
+              'font-size': '20px',
             }}
-            >{`Save mode ${this.state.saveModeEnable?'enabled':'disabled'}`}</label>
+            >{`Save mode ${this.state.saveModeEnable ? 'enabled' : 'disabled'}`}</label>
           </div>
           <p>Erase all data && Refresh</p>
-          <button className="btn-refresh" style={{backgroundImage: `url(${refreshBg})`}} onClick={this.onRefreshBtnClickHandler}>Refresh</button>
+          <button className="btn-refresh" style={{ backgroundImage: `url(${refreshBg})` }} onClick={this.onRefreshBtnClickHandler}>Refresh</button>
         </div>
-          <button className="btn-close" onClick={() =>this.props.hideWindow()}>Close</button>
+          <button className="btn-close" onClick={() => this.props.hideWindow()}>Close</button>
       </div>
     );
   }
 }
-const mapDispatchToProps = dispatch => {
-  return {
-  };
-};
-export default connect( null, mapDispatchToProps )( Settings );
+export default Settings;
