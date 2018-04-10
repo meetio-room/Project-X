@@ -6,7 +6,6 @@ const conflictEvents = (props) => {
   if ((props.error.conflictEvents || []).length > 0) {
     return (
       <div className = "conflicts" >
-      <h3>Conflicts:</h3>
         <ol className = "conflicts-container" >
           { (props.error.conflictEvents || []).map(ev => (
             <li

@@ -13,7 +13,7 @@ const eventDuration = props => (
         key = {duration}
         className={ props.active !== duration ? 'EventDuration-item' : 'EventDuration-item  EventDuration-item-active'}
         onClick = {() => props.itemClick(duration)}
-        >{duration}</button>)
+        >{duration}min</button>)
   }
   <button
     onClick = {() => props.customClick('custom')}

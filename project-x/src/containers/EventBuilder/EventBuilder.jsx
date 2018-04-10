@@ -18,8 +18,8 @@ class EventBuilder extends Component {
       errors: {},
 
       eventNames: ['call', 'conference'],
-      eventStarts: ['now', `+${this.deltaHours}min`, `+${this.deltaHours + 30}min`, `+${this.deltaHours + 60}min`],
-      eventDurations: ['5min', '30min', '60min', '90min'],
+      eventStarts: ['now', this.deltaHours, this.deltaHours + 30, this.deltaHours + 60],
+      eventDurations: ['5', '30', '60', '90'],
 
       activeName: '',
       activeEvStart: '',
@@ -46,7 +46,7 @@ class EventBuilder extends Component {
   onChangeDateTimeHandler = (id, dateTime) => {
     const errors = { ...this.state.errors };
     if (id === 'event-start') {
-      if (dateTime < moment() - (3 * 60 * 1000)) {
+      if (dateTime < moment() - (2 * 60 * 1000)) {
         errors.eventStart = 'Error!\n Event start in the past';
       } else {
         errors.eventStart = null;
@@ -67,17 +67,14 @@ class EventBuilder extends Component {
   }
 
   checkEventErrors = () => {
-    const errors = { ...this.state.errors };
+    const errors = {};
     if (this.newEvent.start && this.newEvent.end) { // validation
       if (this.newEvent.start - this.newEvent.end >= 0) {
         errors.eventEnd = 'The event has start faster than the end!';
-        this.setState({
-          errors,
-        });
       } else {
         errors.eventEnd = null;
-        this.setState({ errors });
       }
+      this.setState({ errors });
       const conflictEvents = this.getConflictEvents(this.newEvent);
       errors.conflictEvents = conflictEvents;
       this.setState({ errors });
@@ -86,10 +83,10 @@ class EventBuilder extends Component {
 
   getConflictEvents = (event) => {
     const result = this.props.events.filter((element) => {
-      const isStartInTheAnotherEvent = moment(event.start) > moment(element.start)
-                                    && moment(event.start) < moment(element.end);
-      const isEndInTheAnotherEvent = moment(event.end) > moment(element.start)
-                                    && moment(event.end) < moment(element.end);
+      const isStartInTheAnotherEvent = moment(event.start - 59000) > moment(element.start)
+                                    && moment(event.start + 59000) < moment(element.end);
+      const isEndInTheAnotherEvent = moment(event.end - 59000) > moment(element.start)
+                                    && moment(event.end + 59000) < moment(element.end);
       const isEventCoverAnotherEvent = moment(element.start) > moment(event.start)
                                      && moment(element.end) < moment(event.end);
       return isStartInTheAnotherEvent || isEndInTheAnotherEvent || isEventCoverAnotherEvent;
@@ -104,6 +101,7 @@ class EventBuilder extends Component {
   }
 
   onCustomNameItemHandler = (sender) => {
+    this.newEvent.summary = '';
     this.setState({ activeName: sender });
     this.setState(prevState => ({ customNameShow: !prevState.customNameShow }));
   }
@@ -114,17 +112,20 @@ class EventBuilder extends Component {
       activeEvStartId: index,
     });
     const curTime = moment();
-    const delta = sender.replace('+', '').replace('min', '');
     if (sender === 'now') {
       this.newEvent.start = curTime;
     } else {
-      this.newEvent.start = curTime.add(delta, 'minutes');
+      this.newEvent.start = curTime.add(sender, 'minutes');
+    }
+    if (this.state.activeEvDuration) {
+      this.newEvent.end = moment(this.newEvent.start).add(this.state.activeEvDuration, 'minutes');
     }
     this.setState({ customEvStart: false });
     this.checkEventErrors();
   }
 
   onCustomEvStartItemClickHandler = (sender) => {
+    this.newEvent.start = null;
     this.setState({
       activeEvStart: sender,
       activeEvStartId: '',
@@ -134,7 +135,6 @@ class EventBuilder extends Component {
 
   onEvDurationItemClickHandler = (sender) => {
     this.setState({ activeEvDuration: sender });
-    const duration = sender.replace('min', '');
     if (!this.newEvent.start) {
       this.newEvent.start = moment();
       this.setState({
@@ -142,11 +142,12 @@ class EventBuilder extends Component {
         activeEvStartId: 0,
       });
     }
-    this.newEvent.end = moment(this.newEvent.start).add(duration, 'minutes');
+    this.newEvent.end = moment(this.newEvent.start).add(sender, 'minutes');
     this.checkEventErrors();
   }
 
   onCustomEvDurationItemClickHandler = (sender) => {
+    this.newEvent.end = null;
     this.setState({ activeEvDuration: sender });
     this.setState(prevState => ({ customEvDuration: !prevState.customEvDuration }));
   }
@@ -155,14 +156,22 @@ class EventBuilder extends Component {
     if (!this.newEvent.summary) {
       this.newEvent.summary = 'Event';
     }
-    if (this.activeEvStart === 'now') {
+
+    if (this.state.activeEvStart === 'now') {
       this.newEvent.start = moment();
+    } else if (this.state.activeEvStart !== 'custom') {
+      this.newEvent.start = moment().add(this.state.activeEvStart, 'minutes');
     }
+
+    if (this.state.activeEvDuration !== 'custom') {
+      this.newEvent.end = moment(this.newEvent.start).add(this.state.activeEvDuration, 'minutes');
+    }
+    this.checkEventErrors();
     if (this.newEvent.start && this.newEvent.end) {
       const isHasErrors = this.state.errors.eventEnd || this.state.errors.conflictEvents.length !== 0
                             || this.state.errors.eventStart;
       if (isHasErrors) {
-        navigator.notification.alert('Room will be busy in this time\n Please select another time', null, 'Room Manager', 'OK');
+        navigator.notification.alert('Room will be busy in this time(or event time is incorrect)\nPlease select another time', null, 'Room Manager', 'OK');
         return;
       }
       this.props.createCalendarEvent(this.newEvent, this.props.calendarId, this.props.token);
@@ -238,7 +247,7 @@ class EventBuilder extends Component {
       that.deltaHours = 60 - moment().minute();
       if (that.deltaHours > 30) that.deltaHours -= 30;
       that.setState({
-        eventStarts: ['now', `+${that.deltaHours}min`, `+${that.deltaHours + 30}min`, `+${that.deltaHours + 60}min`],
+        eventStarts: ['now', that.deltaHours, that.deltaHours + 30, that.deltaHours + 60],
       });
     }, 1000);
   }
