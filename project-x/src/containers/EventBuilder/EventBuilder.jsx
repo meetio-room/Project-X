@@ -19,7 +19,7 @@ class EventBuilder extends Component {
 
       eventNames: ['call', 'conference'],
       eventStarts: ['now', this.deltaHours, this.deltaHours + 30, this.deltaHours + 60],
-      eventDurations: ['5', '30', '60', '90'],
+      eventDurations: ['5', '15', '30', '45', '60'],
 
       activeName: '',
       activeEvStart: '',
@@ -83,10 +83,10 @@ class EventBuilder extends Component {
 
   getConflictEvents = (event) => {
     const result = this.props.events.filter((element) => {
-      const isStartInTheAnotherEvent = moment(event.start - 59000) > moment(element.start)
-                                    && moment(event.start + 59000) < moment(element.end);
-      const isEndInTheAnotherEvent = moment(event.end - 59000) > moment(element.start)
-                                    && moment(event.end + 59000) < moment(element.end);
+      const isStartInTheAnotherEvent = moment(event.start - 29000) > moment(element.start)
+                                    && moment(event.start + 29000) < moment(element.end);
+      const isEndInTheAnotherEvent = moment(event.end - 29000) > moment(element.start)
+                                    && moment(event.end + 29000) < moment(element.end);
       const isEventCoverAnotherEvent = moment(element.start) > moment(event.start)
                                      && moment(element.end) < moment(event.end);
       return isStartInTheAnotherEvent || isEndInTheAnotherEvent || isEventCoverAnotherEvent;
