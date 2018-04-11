@@ -5,28 +5,27 @@ import DatePickerDialog from 'material-ui/DatePicker/DatePickerDialog';
 import TimePickerDialog from 'material-ui/TimePicker/TimePickerDialog';
 import './EventDuration.css';
 
-const eventDuration=(props)=>(
+const eventDuration = props => (
   <MuiThemeProvider>
   <div className="EventDuration">
   {
-    props.eventDurations.map( duration => {
-      return <button 
+    props.eventDurations.map(duration => <button
         key = {duration}
-        className={ props.active !== duration ? "EventDuration-item": "EventDuration-item  EventDuration-item-active"}
+        className={ props.active !== duration ? 'EventDuration-item' : 'EventDuration-item  EventDuration-item-active'}
         onClick = {() => props.itemClick(duration)}
-        >{duration}</button>
-    })
+        >{duration}min</button>)
   }
-  <button 
-    onClick = {() => props.customClick('custom')} 
-    className={ props.active !== 'custom' ? "EventDuration-item": "EventDuration-item EventDuration-item-active"}
+  <button
+    onClick = {() => props.customClick('custom')}
+    className={ props.active !== 'custom' ? 'EventDuration-item' : 'EventDuration-item EventDuration-item-active'}
    >custom</button>
   { props.showCustom ?
     <div className = "inputFileds">
       <DateTimePicker
         returnMomentDate = { true }
-        onChange = { dateTime => props.changeDateTime( 'event-end', dateTime ) }
+        onChange = { dateTime => props.changeDateTime('event-end', dateTime) }
         id = "event-start"
+        readOnly = "readonly"
         floatingLabelText = "Event end"
         format = 'MMM DD, YYYY HH:mm'
         timeFormat = "24hr"

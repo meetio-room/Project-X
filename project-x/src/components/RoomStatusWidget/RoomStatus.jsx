@@ -5,8 +5,8 @@ import { getClock, getTimeString } from '../../service/util';
 
 /**
  * Use: <RoomStatus status="" eventName="" timeEventBegin="" timeEventFinish="" description="" currentTime="" timeToNextEvent="" clicked={} BtnName="" />
- * Props: 
- *  {string} status - status of the room ('Available', 'Reserved' or 'Busy') 
+ * Props:
+ *  {string} status - status of the room ('Available', 'Reserved' or 'Busy')
  *  {string} eventName -  name of current event
  *  {string} timeToNextEvent -  time to next event in minutes
  *  {string} timeEventBegin -  start time of current event
@@ -14,32 +14,42 @@ import { getClock, getTimeString } from '../../service/util';
  *  {string} description -  description of current event(author, some about event)
  *  {string} BtnName - name for bottom button
  */
-const roomStatus = props => {
+const roomStatus = (props) => {
   let statusText = '';
-  if ( props.status === 'Available' ) {
-    statusText = props.status; 
-  } else if ( props.status === 'Reserved' ) {
-    statusText = 'Available'; 
-  } else if ( props.status === 'Busy' ) {
-    statusText = props.eventName;
+  if (props.status === 'Available') {
+    statusText = props.status;
+  } else if (props.status === 'Reserved') {
+    statusText = 'Available';
+  } else if (props.status === 'Busy') {
+    statusText = props.eventName.replace(props.eventName[0], props.eventName[0].toUpperCase());
   }
 
   let timeToEvent = '';
-  let time = props.timeToNextEvent;
+  const time = props.timeToNextEvent;
 
-  if ( getTimeString(props.timeToNextEvent) === '0' ) {
+  if (getTimeString(props.timeToNextEvent) === '0') {
     timeToEvent = 'less than 1 minute';
-  } else if ( getTimeString(props.timeToNextEvent)  === '- :-'  || time > 864e5 ) {
+  } else if (getTimeString(props.timeToNextEvent) === '- :-' || time > 864e5) {
     timeToEvent = 'free for today';
   } else {
-    timeToEvent = (<span>the nearest time in <br/>{`${getTimeString(props.timeToNextEvent).replace( ':', 'h ' )} min`}</span> );
+    timeToEvent = (<span>the nearest time in <br/>{`${getTimeString(props.timeToNextEvent).replace(':', 'h ')} min`}</span>);
   }
-  let timeToFinish = getTimeString(props.timeEventFinish - moment()).replace(':', 'h ');
-  if( timeToFinish.trim() === '0' ){
-     let temp = (props.timeEventFinish - moment())/1000;
-     if(temp >= 1) timeToFinish = ((props.timeEventFinish - moment())/1000).toFixed() + ' seconds';
-     else temp = 0;
-  } else timeToFinish = timeToFinish + ' minutes';
+
+  const tToEnd = props.timeEventFinish - moment();
+  let timeToFinish = getTimeString(tToEnd).replace(':', 'h ');
+  if (tToEnd > 100) {
+    if (timeToFinish.trim() === '0') {
+      const temp = (tToEnd / 1000).toFixed();
+      if (temp >= 0) {
+        timeToFinish = `${temp} seconds`;
+      }
+    } else {
+      timeToFinish += ' minutes';
+    }
+  } else if (isNaN(tToEnd) || tToEnd < 0) {
+    timeToFinish = 'now';
+  }
+
 
   return (
     <div className = "RoomStatus" >
@@ -67,11 +77,11 @@ const roomStatus = props => {
          <div className = "clock" > { getClock(props.currentTime) } </div>
           <button
             to = "/newEvent"
-            onClick = { props.clicked } 
+            onClick = { props.clicked }
             className = { `btn btn-${props.status}`}
           >
             { props.BtnName }
-          </button>  
+          </button>
         </div>
       </div>
     </div>

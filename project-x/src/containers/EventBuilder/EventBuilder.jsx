@@ -1,224 +1,246 @@
-/* global alert */
 import React, { Component } from 'react';
-import EventNames from '../../components/EventConstructor/EventName/EventNames';
-import EventStarts from '../../components/EventConstructor/EventTimeStart/EventStarts';
-import EventDuration from '../../components/EventConstructor/EventDuration/EventDuration';
-import ConflictEvents from '../../components/EventConstructor/ConflictEvents/ConflictEvents';
-import CameraIcon  from 'react-icons/lib/fa/camera'
+import CameraIcon from 'react-icons/lib/fa/camera';
 import moment from 'moment';
-import Device from '../../device';
 import { connect } from 'react-redux';
+
+import Device from '../../device';
+import EventNames from '../../components/EventConstructor/EventName/EventNames.jsx';
+import EventStarts from '../../components/EventConstructor/EventTimeStart/EventStarts.jsx';
+import EventDuration from '../../components/EventConstructor/EventDuration/EventDuration.jsx';
+import ConflictEvents from '../../components/EventConstructor/ConflictEvents/ConflictEvents.jsx';
 import { createEvent } from '../../store/actions/calendar';
-import {comparePhoto} from '../../store/actions/rekognize';
+import { comparePhoto } from '../../store/actions/rekognize';
 import './EventBuilder.css';
 
 class EventBuilder extends Component {
-  constructor( props ) {
-    super( props );
+  constructor(props) {
+    super(props);
     this.deltaHours = 60 - moment().minute();
-    if(this.deltaHours > 30) this.deltaHours -= 30;
+    if (this.deltaHours > 30) this.deltaHours -= 30;
     this.state = {
       errors: {},
-      
-      eventNames: ['call','conference'],
-      eventStarts: ['now',`+${this.deltaHours}min`,`+${this.deltaHours + 30}min`, `+${this.deltaHours + 60}min`],
-      eventDurations:['5min', '30min','60min', '90min'],
-      
+
+      eventNames: ['call', 'conference'],
+      eventStarts: ['now', this.deltaHours, this.deltaHours + 30, this.deltaHours + 60],
+      eventDurations: ['5', '15', '30', '45', '60'],
+
       activeName: '',
       activeEvStart: '',
+      activeEvStartId: '',
       activeEvDuration: '',
 
       customNameShow: false,
       customEvStart: false,
-      customEvDuration: false
+      customEvDuration: false,
     };
     this.newEvent = {};
     this.timer = null;
   }
 
-  shouldComponentUpdate(nextProps){
-    if(nextProps.show!==true&&this.props.show!==true)return false;
-    else return true;
+  shouldComponentUpdate(nextProps) {
+    if (nextProps.show !== true && this.props.show !== true) return false;
+    return true;
   }
 
-  onInputHandler = e => {
+  onInputHandler = (e) => {
     this.newEvent.summary = e.target.value;
-  } 
+  }
 
-  onChangeDateTimeHandler = ( id, dateTime ) => {
+  onChangeDateTimeHandler = (id, dateTime) => {
     const errors = { ...this.state.errors };
-    if ( id === 'event-start' ) {
-      if ( dateTime < moment() - 3 * 60 * 1000 ) {
+    if (id === 'event-start') {
+      if (dateTime < moment() - (2 * 60 * 1000)) {
         errors.eventStart = 'Error!\n Event start in the past';
       } else {
         errors.eventStart = null;
         this.newEvent.start = dateTime;
       }
-      this.setState( { errors: errors } );
-    } else if ( id === 'event-end' ) {
+      this.setState({ errors });
+    } else if (id === 'event-end') {
       this.newEvent.end = dateTime;
-      if(!this.newEvent.start){
+      if (!this.newEvent.start) {
         this.newEvent.start = moment();
-        
-        this.setState({activeEvStart:'now'});
+        this.setState({
+          activeEvStart: 'now',
+          activeEvStartId: 0,
+        });
       }
     }
     this.checkEventErrors();
   }
 
   checkEventErrors = () => {
-    const errors = { ...this.state.errors };
-    if ( this.newEvent.start && this.newEvent.end ) { // validation
-      if ( this.newEvent.start - this.newEvent.end >= 0 ) {
+    const errors = {};
+    if (this.newEvent.start && this.newEvent.end) { // validation
+      if (this.newEvent.start - this.newEvent.end >= 0) {
         errors.eventEnd = 'The event has start faster than the end!';
-        this.setState( {
-          errors: errors
-        } );
       } else {
         errors.eventEnd = null;
-        this.setState( { errors: errors } );
       }
-      const conflictEvents = this.getConflictEvents( this.newEvent );
+      this.setState({ errors });
+      const conflictEvents = this.getConflictEvents(this.newEvent);
       errors.conflictEvents = conflictEvents;
-      this.setState( { errors: errors } );
+      this.setState({ errors });
     }
   }
 
-  getConflictEvents = event => {
-    const result = this.props.events.filter( element => {
-      const isStartInTheAnotherEvent = moment( event.start ) > moment( element.start ) 
-                                    && moment( event.start ) < moment( element.end );
-      const isEndInTheAnotherEvent = moment( event.end ) > moment( element.start ) 
-                                    && moment( event.end ) < moment( element.end );
-      const isEventCoverAnotherEvent = moment( element.start ) > moment( event.start )
-                                     && moment( element.end ) < moment( event.end );
+  getConflictEvents = (event) => {
+    const result = this.props.events.filter((element) => {
+      const isStartInTheAnotherEvent = moment(event.start - 29000) > moment(element.start)
+                                    && moment(event.start + 29000) < moment(element.end);
+      const isEndInTheAnotherEvent = moment(event.end - 29000) > moment(element.start)
+                                    && moment(event.end + 29000) < moment(element.end);
+      const isEventCoverAnotherEvent = moment(element.start) > moment(event.start)
+                                     && moment(element.end) < moment(event.end);
       return isStartInTheAnotherEvent || isEndInTheAnotherEvent || isEventCoverAnotherEvent;
-    } );
+    });
     return result;
-  } 
+  }
 
-  onNameItemClickHandler = sender => {
+  onNameItemClickHandler = (sender) => {
     this.newEvent.summary = sender;
-    this.setState({customNameShow: false});
-    this.setState({activeName: sender});
+    this.setState({ customNameShow: false });
+    this.setState({ activeName: sender });
   }
 
-  onCustomNameItemHandler = sender => {
-    this.setState({activeName: sender});
-    this.setState((prevState,prevProps)=>{
-      return { customNameShow: !prevState.customNameShow }
-    });
+  onCustomNameItemHandler = (sender) => {
+    this.newEvent.summary = '';
+    this.setState({ activeName: sender });
+    this.setState(prevState => ({ customNameShow: !prevState.customNameShow }));
   }
-  
-  onEvStartItemClickHandler = sender => {
-    this.setState({activeEvStart: sender});
-    let curTime = moment();
-    let delta = sender.replace('+','').replace('min', '');
-    if (sender === 'now'){
+
+  onEvStartItemClickHandler = (sender, index) => {
+    this.setState({
+      activeEvStart: sender,
+      activeEvStartId: index,
+    });
+    const curTime = moment();
+    if (sender === 'now') {
       this.newEvent.start = curTime;
+    } else {
+      this.newEvent.start = curTime.add(sender, 'minutes');
     }
-    else {
-      this.newEvent.start = curTime.add(delta,'minutes');
+    if (this.state.activeEvDuration) {
+      this.newEvent.end = moment(this.newEvent.start).add(this.state.activeEvDuration, 'minutes');
     }
-    this.setState({customEvStart: false});
+    this.setState({ customEvStart: false });
     this.checkEventErrors();
   }
-  
-  onCustomEvStartItemClickHandler = sender => {
-    this.setState({activeEvStart: sender});
-    this.setState((prevState,prevProps)=>{
-      return { customEvStart: !prevState.customEvStart }
+
+  onCustomEvStartItemClickHandler = (sender) => {
+    this.newEvent.start = null;
+    this.setState({
+      activeEvStart: sender,
+      activeEvStartId: '',
     });
+    this.setState(prevState => ({ customEvStart: !prevState.customEvStart }));
   }
 
-  onEvDurationItemClickHandler = sender => {
-    this.setState({activeEvDuration: sender});
-    let duration = sender.replace('min','');
-    if(!this.newEvent.start){
+  onEvDurationItemClickHandler = (sender) => {
+    this.setState({ activeEvDuration: sender });
+    if (!this.newEvent.start) {
       this.newEvent.start = moment();
-      this.setState({activeEvStart:'now'});
+      this.setState({
+        activeEvStart: 'now',
+        activeEvStartId: 0,
+      });
     }
-    this.newEvent.end = moment(this.newEvent.start).add(duration, 'minutes');
+    this.newEvent.end = moment(this.newEvent.start).add(sender, 'minutes');
     this.checkEventErrors();
   }
 
-  onCustomEvDurationItemClickHandler = sender => {
-    this.setState({activeEvDuration: sender});
-    this.setState((prevState, prevProps)=>{
-      return { customEvDuration: !prevState.customEvDuration }
-    });
+  onCustomEvDurationItemClickHandler = (sender) => {
+    this.newEvent.end = null;
+    this.setState({ activeEvDuration: sender });
+    this.setState(prevState => ({ customEvDuration: !prevState.customEvDuration }));
   }
 
   onConfirmClickHandler = () => {
-    if(!this.newEvent.summary){
+    if (!this.newEvent.summary) {
       this.newEvent.summary = 'Event';
     }
-    if ( this.newEvent.start && this.newEvent.end ) {
-      const isHasErrors = this.state.errors.eventEnd || this.state.errors.conflictEvents.length !== 0 
+
+    if (this.state.activeEvStart === 'now') {
+      this.newEvent.start = moment();
+    } else if (this.state.activeEvStart !== 'custom') {
+      this.newEvent.start = moment().add(this.state.activeEvStart, 'minutes');
+    }
+
+    if (this.state.activeEvDuration !== 'custom') {
+      this.newEvent.end = moment(this.newEvent.start).add(this.state.activeEvDuration, 'minutes');
+    }
+    this.checkEventErrors();
+    if (this.newEvent.start && this.newEvent.end) {
+      const isHasErrors = this.state.errors.eventEnd || this.state.errors.conflictEvents.length !== 0
                             || this.state.errors.eventStart;
-      if ( isHasErrors ) {
-        alert( 'Room will be busy in this time\n Please select another time' );
+      if (isHasErrors) {
+        navigator.notification.alert('Room will be busy in this time(or event time is incorrect)\nPlease select another time', null, 'Room Manager', 'OK');
         return;
       }
-      this.props.createCalendarEvent( this.newEvent, this.props.calendarId, this.props.token );
+      this.props.createCalendarEvent(this.newEvent, this.props.calendarId, this.props.token);
       this.closeEventBuilder();
     } else {
-      alert( 'Please choose time for event!' );
+      navigator.notification.alert('Please choose time for event!', null, 'Room Manager', 'OK');
     }
   }
 
   identificateUser = () => {
-    Device.createPhoto().then(img=>{
+    Device.createPhoto().then((img) => {
       Device.showToast('compared...');
       this.props.compPhoto(img);
-     }).catch(err=>alert(err));
+    }).catch(err => alert(err));
   }
 
-  closeEventBuilder(){
+  closeEventBuilder() {
     this.setState({
       activeName: '',
       activeEvStart: '',
       activeEvDuration: '',
-      errors: {}
+      activeEvStartId: '',
+      customNameShow: false,
+      customEvStart: false,
+      customEvDuration: false,
+      errors: {},
     });
     this.props.hideEventBuilder();
-    this.newEvent={};
+    this.newEvent = {};
   }
 
   render() {
-    if ( this.props.show === false ) {
+    if (this.props.show === false) {
       return null;
     }
     return (
       <div className = "EventBuilder" onDoubleClick={() => this.closeEventBuilder()} >
         <ConflictEvents error={this.state.errors}/>
         <h2>Please choose event type</h2>
-        <EventNames 
+        <EventNames
           active = {this.state.activeName}
           itemClick = {this.onNameItemClickHandler}
           names = {this.state.eventNames}
-          inputedValue = { this.onInputHandler } 
+          inputedValue = { this.onInputHandler }
           error ={ this.state.errors }
           customClick = {this.onCustomNameItemHandler}
           showCustom={ this.state.customNameShow}
           />
-        
+
         <h2>Please select the start of event</h2>
         <EventStarts
           active = {this.state.activeEvStart}
+          activeId = {this.state.activeEvStartId}
           itemClick = {this.onEvStartItemClickHandler}
           eventStart = {this.state.eventStarts}
-          changeDateTime = {this.onChangeDateTimeHandler} 
-          error = { this.state.errors } 
+          changeDateTime = {this.onChangeDateTimeHandler}
+          error = { this.state.errors }
           customClick = {this.onCustomEvStartItemClickHandler}
           showCustom = {this.state.customEvStart}/>
-        
+
         <h2>Please select the duration of the event</h2>
         <EventDuration
           active = {this.state.activeEvDuration}
           itemClick = {this.onEvDurationItemClickHandler}
           eventDurations = {this.state.eventDurations}
-          changeDateTime = {this.onChangeDateTimeHandler} 
+          changeDateTime = {this.onChangeDateTimeHandler}
           error = { this.state.errors }
           customClick = {this.onCustomEvDurationItemClickHandler}
           showCustom = { this.state.customEvDuration }
@@ -229,34 +251,30 @@ class EventBuilder extends Component {
     );
   }
 
-  componentDidMount(){
-    const that = this
-    that.timer=setInterval(()=>{
+  componentDidMount() {
+    const that = this;
+    that.timer = setInterval(() => {
       that.deltaHours = 60 - moment().minute();
-      if(that.deltaHours > 30) that.deltaHours -= 30;
+      if (that.deltaHours > 30) that.deltaHours -= 30;
       that.setState({
-        eventStarts: ['now',`+${that.deltaHours}min`,`+${that.deltaHours + 30}min`, `+${that.deltaHours + 60}min`]
+        eventStarts: ['now', that.deltaHours, that.deltaHours + 30, that.deltaHours + 60],
       });
-    })
+    }, 1000);
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     clearInterval(this.timer);
     this.timer = null;
   }
 }
-const mapStateToProps = state => {
-  return {
-    token: state.calendar.access_token,
-    calendarId: state.calendar.currentCalendar,
-    events: state.calendar.currentCalendarEvents
-  };
-};
-const mapDispatchToProps = dispatch => {
-  return {
-    createCalendarEvent: ( event, calendarId, access_token ) =>
-      dispatch( createEvent( event, calendarId, access_token ) ),
-    compPhoto: src => dispatch(comparePhoto(src)),
-  };
-};
-export default connect( mapStateToProps, mapDispatchToProps )( EventBuilder );
+const mapStateToProps = state => ({
+  token: state.calendar.access_token,
+  calendarId: state.calendar.currentCalendar,
+  events: state.calendar.currentCalendarEvents,
+});
+const mapDispatchToProps = dispatch => ({
+  createCalendarEvent: (event, calendarId, accessToken) =>
+    dispatch(createEvent(event, calendarId, accessToken)),
+  compPhoto: img => dispatch(comparePhoto(img)),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(EventBuilder);
