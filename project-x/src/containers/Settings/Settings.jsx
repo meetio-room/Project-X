@@ -14,10 +14,6 @@ class Settings extends Component {
       showRekognizeForm: false,
       saveModeEnable: JSON.parse(localStorage.getItem('saveModeON')),
     };
-    this.rekognitionDate = {
-      name: '',
-      email: '',
-    };
   }
   onRefreshBtnClickHandler = () => {
     localStorage.removeItem('accessToken');
@@ -44,24 +40,14 @@ class Settings extends Component {
   }
 
   onAddBtnClickHandler = (e) => {
-    this.rekognitionDate = {
-      name: e.target.rekognizeName.value,
-      email: e.target.rekognizeEmail.value,
-    };
-    alert(e.target.rekognizeName.value);
-    alert(e.target.rekognizeEmail.value);
-
-    e.preventDefault();
-    e.stopPropagation();
-    this.setState({ showRekognizeForm: false });
-  }
-  onMakePhotoClickHandler = (e) => {
-    const that = this;
     Device.createPhoto().then((img) => {
-      this.props.insertToGallery(img, `${that.rekognitionDate.name}%%${that.rekognitionDate.email}`);
-      this.props.hideWindow();
+      if (this.rekognitionDate.email) {
+        this.props.insertToGallery(img, `${e.target.rekognizeName.value}%%${e.target.rekognizeEmail.value}`);
+        this.setState({ showRekognizeForm: false });
+      } else {
+        navigator.notification.alert('Error!\nemail are required', null, 'Room Manager', 'OK');
+      }
     }).catch(err => alert(err));
-
     e.preventDefault();
     e.stopPropagation();
   }
@@ -93,7 +79,7 @@ class Settings extends Component {
             >{`Save mode ${this.state.saveModeEnable ? 'enabled' : 'disabled'}`}</label>
           </div>
           <p>Erase all data && Refresh</p>
-          <button className="btn-refresh" style={{ backgroundImage: `url(${refreshBg})` }} onClick={this.onRefreshBtnClickHandler}>Refresh</button>
+          <button className="btn-refresh" style={{ backgroundImage: `url(${refreshBg})` }} onClick={this.onRefreshBtnClickHandler}>Reset</button>
           <div className="rekognize-section">
             <label className="Settings-title">Rekognize:</label>
             <button className="btn-rekognize" onClick={this.onBtnAddUserClickHandler}>Add User</button>
@@ -101,8 +87,7 @@ class Settings extends Component {
           </div>
           <RekognizeForm
             show ={this.state.showRekognizeForm}
-            onAdd={this.onAddBtnClickHandler}
-            onMakePhoto={this.onMakePhotoClickHandler}/>
+            onAdd={this.onAddBtnClickHandler}/>
         </div>
           <button className="btn-close" onClick={() => this.props.hideWindow()}>Close</button>
       </div>

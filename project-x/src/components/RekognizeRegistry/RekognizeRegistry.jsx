@@ -7,14 +7,13 @@ const rekognize = (props) => {
   return (
   <div className="RekognizeRegistry">
     <form onSubmit={props.onAdd}>
-      <label htmlFor="rekognizeName">username:</label>
+      <label htmlFor="rekognizeName" placeholder="Ivan Petrov">username:</label>
       <input type="text" id="rekognizeName"/>
 
       <label htmlFor="rekognizeEmail">email:</label>
       <input type="email" id="rekognizeEmail"/>
 
-      <button type="button" onClick={props.onMakePhoto}><CameraIcon/> Make a photo</button>
-      <button type="submit"> Add</button>
+      <button type="submit"><CameraIcon/>Create User</button>
     </form>
     {props.img ? <img src="" alt="" className="RekognizePhoto"/> : null}
   </div>
