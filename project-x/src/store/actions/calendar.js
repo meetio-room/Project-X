@@ -1,5 +1,7 @@
 import axios from 'axios';
 import Device from '../../device';
+import store from '../store';
+
 /**
 *  Select current calendar by id
 * @param {string} id - calendar id
@@ -94,6 +96,11 @@ const errorHandler = error => ({
   payload: error,
 });
 
+const saveUsersTOStoreFromDB = users => ({
+  type: 'SAVE_USERS_ID',
+  payload: users,
+});
+
 const loadCalendarsFromGoogle = accessToken => (dispatch) => {
   dispatch(showSpinner(true));
   axios.get(`https://www.googleapis.com/calendar/v3/users/me/calendarList?access_token=${accessToken}`)
@@ -101,17 +108,33 @@ const loadCalendarsFromGoogle = accessToken => (dispatch) => {
       const result = res.data.items;
       const calendars = [];
       result.forEach((element) => {
-        if (element.accessRole === 'owner') {
-          calendars.push({
-            id: element.id,
-            name: element.summary,
-          });
-        }
+        calendars.push({
+          id: element.id,
+          name: element.summary,
+        });
       });
       dispatch(createCalendarsList(calendars));
     }).catch(() => {
       dispatch(showSpinner(false));
       dispatch(errorHandler('Something went wrong!\nPlease re-run the program!'));
+    });
+};
+
+export const saveUserToDB = (userID, email) => {
+  axios.post('https://roommanager-44c77.firebaseio.com/users.json', {
+    email,
+    userID,
+  });
+};
+export const readUsersFromDb = () => (dispatch) => {
+  axios.get('https://roommanager-44c77.firebaseio.com/users.json')
+    .then((response) => {
+      const users = [];
+      for (const key in response.data) {
+        const user = response.data[key];
+        users.push(user);
+      }
+      dispatch(saveUsersTOStoreFromDB(users));
     });
 };
 
@@ -159,6 +182,7 @@ export const login = () => (dispatch) => {
       (obj) => {
         dispatch(loadCalendarsFromGoogle(obj.accessToken));
         dispatch(refreshToken(obj.serverAuthCode));
+        dispatch(readUsersFromDb());
       },
       () => {
         dispatch(login());
@@ -198,31 +222,52 @@ export const loadCurrentEvent = event => (dispatch) => {
 /**
 * Load future events for special calendar
 * @param {string} calendarId - id of google calendar
-* @param {string} accessToken - user token for google api
+* @param {string} access_token - user token for google api
 * @returns { action } dispatch action
 */
 export const loadEvents = (calendarId, accessToken) => (dispatch) => {
   axios.get(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?access_token=${accessToken}`)
-    .then((res) => {
+    .then((res) => { // get events from google
       const result = res.data;
       const calendarEvents = [];
       const curDate = new Date();
-
       result.items.forEach((e) => { // events
-        const endDatetime = Date.parse(e.end.dateTime);
-        if (endDatetime > curDate) {
-          const event = {
-            name: e.summary,
-            id: e.id,
-            start: e.start.dateTime,
-            end: e.end.dateTime,
-            description: e.description,
-          };
-          calendarEvents.push(event);
+        if (e.end) {
+          const endDatetime = Date.parse(e.end.dateTime);
+          const attendees = e.attendees ?
+            e.attendees.filter(a => a.responseStatus === 'accepted' && !a.self)
+            : [{ email: e.creator.email }];
+          if (endDatetime > curDate) {
+            const event = {
+              name: e.summary,
+              id: e.id,
+              start: e.start.dateTime,
+              end: e.end.dateTime,
+              description: e.description,
+              attendees,
+            };
+            calendarEvents.push(event);
+          }
         }
       });
       calendarEvents.sort((a, b) => Date.parse(a.start) - Date.parse(b.start));
-      dispatch(saveCalendarEvents(calendarEvents));
+      return calendarEvents;
+    })
+    .then((events) => { // load attendees image url for first event
+      if (events.length > 0) {
+        events[0].attendees.forEach((a) => {
+          const user = store.getState().calendar.people.filter(u => u.email === a.email)[0];
+          if (user) {
+            a.name = a.email.split('@')[0].replace('.', ' ');
+            axios.get(`https://people.googleapis.com/v1/people/${user.userID}?personFields=photos&key=${process.env.REACT_APP_GOOGLE_API_KEY}`)
+              .then((response) => {
+                const imgUrl = response.data.photos ? response.data.photos[0].url : '';
+                a.img = imgUrl;
+              });
+          }
+        });
+        dispatch(saveCalendarEvents(events));
+      }
     });
 };
 
@@ -264,7 +309,7 @@ export const createCalendar = (calendarName, accessToken) => {
   *  @param {string} calendarId - google calendar id
   *  @param {string} access_token - user token for google api
   */
-export const createEvent = (event, calendarId, accessToken) => {
+export const createEvent = (event, calendarId, accessToken) => { // should add attendees
   const data = {
     start: {
       dateTime: event.start.format(),
@@ -287,7 +332,6 @@ export const createEvent = (event, calendarId, accessToken) => {
       .then((res) => {
         const newEvent = {
           id: res.data.id,
-          description: res.data.description,
           name: res.data.summary,
           start: res.data.start.dateTime,
           end: res.data.end.dateTime,

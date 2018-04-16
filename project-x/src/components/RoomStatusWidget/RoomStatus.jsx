@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import './RoomStatus.css';
 import { getClock, getTimeString } from '../../service/util';
+import AttendeeItem from '../AttendeeItem/AttendeeItem';
 
 /**
  * Use: <RoomStatus status="" eventName="" timeEventBegin="" timeEventFinish="" description="" currentTime="" timeToNextEvent="" clicked={} BtnName="" />
@@ -55,11 +56,20 @@ const roomStatus = (props) => {
     <div className = "RoomStatus" >
       <div className = { `header header-${props.status}`} >
         <div className = { `container container-${props.status}`} >
-          <div className = { `status status-${props.status}`} > {statusText}</div>
+          <div className = { `status status-${props.status}`} >
+            {statusText}
+          </div>
           { props.status === 'Busy' ?
             <div>
               <div className = "EventDuration" >
                 { `will finish in ${timeToFinish}` }
+              </div>
+              <div className = "Attendees-section">
+                <ul className = "Attendees-list">
+                  { (props.attendees || []).map(a => <li>
+                    <AttendeeItem name={a.name} img={a.img}/>
+                  </li>)}
+                </ul>
               </div>
             </div>
             : <div>

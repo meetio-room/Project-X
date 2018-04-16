@@ -110,6 +110,21 @@
   width: 100%;
 }
 
+.Attendees-section{
+  display: block;
+  overflow: scroll;flow: scroll;
+}
+
+.Attendees-list{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;
+  max-height: 22vh;
+  margin-bottom: 0;
+}
+
 .btn{
   color: black;
   padding: 20px;

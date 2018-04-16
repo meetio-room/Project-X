@@ -47,6 +47,7 @@ class RoomManager extends Component {
       timeToNextEvent = { this.props.room.timeToNextEvent }
       description = { this.props.room.description }
       currentTime = { this.state.currentTime }
+      attendees = {this.props.events[0] ? this.props.events[0].attendees : []}
       BtnName = { this.props.room.BtnName }
       clicked = { () => this.onRoomStatusBtnClickHandler() }
       />
