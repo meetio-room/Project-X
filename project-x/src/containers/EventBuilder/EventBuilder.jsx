@@ -53,13 +53,14 @@ class EventBuilder extends Component {
         errors.eventStart = 'Error!\n Event start in the past';
       } else {
         errors.eventStart = null;
-        this.newEvent.start = dateTime;
+        this.newEvent.start = dateTime - (dateTime.second() * 1000);
       }
       this.setState({ errors });
     } else if (id === 'event-end') {
       this.newEvent.end = dateTime;
       if (!this.newEvent.start) {
         this.newEvent.start = moment();
+        this.newEvent.start -= this.newEvent.second() * 1000;
         this.setState({
           activeEvStart: 'now',
           activeEvStartId: 0,
@@ -85,13 +86,13 @@ class EventBuilder extends Component {
   }
 
   getConflictEvents = (event) => {
-    const result = this.props.events.filter((element) => {
-      const isStartInTheAnotherEvent = moment(event.start - 29000) > moment(element.start)
-                                    && moment(event.start + 29000) < moment(element.end);
-      const isEndInTheAnotherEvent = moment(event.end - 29000) > moment(element.start)
-                                    && moment(event.end + 29000) < moment(element.end);
-      const isEventCoverAnotherEvent = moment(element.start) > moment(event.start)
-                                     && moment(element.end) < moment(event.end);
+    const result = this.props.events.filter((e) => {
+      const isStartInTheAnotherEvent = moment(event.start) >= moment(e.start)
+                                      && moment(event.start) < moment(e.end);
+      const isEndInTheAnotherEvent = moment(event.end) >= moment(e.start)
+                                      && moment(event.end) < moment(e.end);
+      const isEventCoverAnotherEvent = moment(e.start) >= moment(event.start)
+                                       && moment(e.end) <= moment(event.end);
       return isStartInTheAnotherEvent || isEndInTheAnotherEvent || isEventCoverAnotherEvent;
     });
     return result;
@@ -117,8 +118,10 @@ class EventBuilder extends Component {
     const curTime = moment();
     if (sender === 'now') {
       this.newEvent.start = curTime;
+      this.newEvent.start = curTime - (curTime.second() * 1000);
     } else {
       this.newEvent.start = curTime.add(sender, 'minutes');
+      this.newEvent.start -= this.newEvent.start.second() * 1000;
     }
     if (this.state.activeEvDuration) {
       this.newEvent.end = moment(this.newEvent.start).add(this.state.activeEvDuration, 'minutes');
@@ -133,19 +136,23 @@ class EventBuilder extends Component {
       activeEvStart: sender,
       activeEvStartId: '',
     });
-    this.setState(prevState => ({ customEvStart: !prevState.customEvStart }));
+    this.setState(prevState => ({
+      customEvStart: !prevState.customEvStart,
+    }));
   }
 
   onEvDurationItemClickHandler = (sender) => {
     this.setState({ activeEvDuration: sender });
     if (!this.newEvent.start) {
       this.newEvent.start = moment();
+      this.newEvent.start -= this.newEvent.start.second() * 1000;
       this.setState({
         activeEvStart: 'now',
         activeEvStartId: 0,
       });
     }
     this.newEvent.end = moment(this.newEvent.start).add(sender, 'minutes');
+    this.setState({ customEvDuration: false });
     this.checkEventErrors();
   }
 
@@ -166,6 +173,8 @@ class EventBuilder extends Component {
       this.newEvent.start = moment().add(this.state.activeEvStart, 'minutes');
     }
 
+    this.newEvent.start -= this.newEvent.start.second() * 1000;
+    this.newEvent.start = moment(this.newEvent.start);
     if (this.state.activeEvDuration !== 'custom') {
       this.newEvent.end = moment(this.newEvent.start).add(this.state.activeEvDuration, 'minutes');
     }
