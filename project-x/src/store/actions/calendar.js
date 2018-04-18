@@ -256,7 +256,7 @@ export const loadEvents = (calendarId, accessToken) => (dispatch) => {
     .then((events) => { // load attendees image url for first event
       if (events.length > 0) {
         events[0].attendees.forEach((a) => {
-          const user = calendarStore.people.filter(u => u.email === a.email)[0];
+          const user = store.getState().calendar.people.filter(u => u.email === a.email)[0];
           if (user) {
             a.name = a.email.split('@')[0].replace('.', ' ');
             axios.get(`https://people.googleapis.com/v1/people/${user.userID}?personFields=photos&key=${process.env.REACT_APP_GOOGLE_API_KEY}`)
@@ -269,8 +269,9 @@ export const loadEvents = (calendarId, accessToken) => (dispatch) => {
           }
         });
       }
-      dispatch(saveCalendarEvents(events));
+      return events;
     })
+    .then(events => dispatch(saveCalendarEvents(events)))
     .catch(err => alert(JSON.stringify(err)));
 };
 
