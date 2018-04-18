@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './Settings.css';
 import * as config from '../../config';
-import RekognizeForm from '../../components/RekognizeRegistry/RekognizeRegistry';
+import RekognizeForm from '../../components/RekognizeRegistry/RekognizeRegistry.jsx';
 import { insertPhotoToGallery, clearGallery } from '../../store/actions/rekognize';
 import refreshBg from '../../images/refresh.png';
 import Device from '../../device';
@@ -39,17 +39,18 @@ class Settings extends Component {
     }));
   }
 
-  onAddBtnClickHandler = (e) => {
+  onRekognizeSubmit = () => {
+    const eventSubmit = window.event;
     Device.createPhoto().then((img) => {
-      if (this.rekognitionDate.email) {
-        this.props.insertToGallery(img, `${e.target.rekognizeName.value}%%${e.target.rekognizeEmail.value}`);
+      if (eventSubmit.target.rekognizeEmail.value) {
+        this.props.insertToGallery(img, `${eventSubmit.target.rekognizeName.value}%%${eventSubmit.target.rekognizeEmail.value}`);
         this.setState({ showRekognizeForm: false });
       } else {
         navigator.notification.alert('Error!\nemail are required', null, 'Room Manager', 'OK');
       }
     }).catch(err => alert(err));
-    e.preventDefault();
-    e.stopPropagation();
+    eventSubmit.preventDefault();
+    eventSubmit.stopPropagation();
   }
 
   render() {
@@ -87,7 +88,7 @@ class Settings extends Component {
           </div>
           <RekognizeForm
             show ={this.state.showRekognizeForm}
-            onAdd={this.onAddBtnClickHandler}/>
+            onAdd={this.onRekognizeSubmit}/>
         </div>
           <button className="btn-close" onClick={() => this.props.hideWindow()}>Close</button>
       </div>
