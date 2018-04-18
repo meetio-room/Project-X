@@ -13,7 +13,6 @@ const initialState = {
     status: 'Available',
     timeStart: '',
     eventName: '',
-    description: '',
     timeEnd: '',
     BtnName: 'Quick book for now!',
     timeToNextEvent: ' - ',
@@ -127,18 +126,9 @@ export default function calendar(state = initialState, action) {
     }
     case 'LOAD_CALENDAR_EVENTS':
     {
-      const events = [...action.payload];
-      if (state.currentCalendarEvents.length && events.length
-        && events[0].id === state.currentCalendarEvents[0].id) {
-        const newEvent = events[0].attendees.filter((val, index) => val.email !== state.currentCalendarEvents[0].attendees[index].email);
-
-        if (newEvent.length === 0) {
-          return state;
-        }
-      }
       return {
         ...state,
-        currentCalendarEvents: [...events],
+        currentCalendarEvents: [...action.payload],
       };
     }
     default:

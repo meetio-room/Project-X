@@ -3,7 +3,6 @@ import moment from 'moment';
 import Device from '../../device';
 import store from '../store';
 
-const calendarStore = store.getState().calendar;
 /**
 *  Select current calendar by id
 * @param {string} id - calendar id
@@ -257,8 +256,8 @@ export const loadEvents = (calendarId, accessToken) => (dispatch) => {
       if (events.length > 0) {
         events[0].attendees.forEach((a) => {
           const user = store.getState().calendar.people.filter(u => u.email === a.email)[0];
+          a.name = a.email.split('@')[0].replace('.', ' ');
           if (user) {
-            a.name = a.email.split('@')[0].replace('.', ' ');
             axios.get(`https://people.googleapis.com/v1/people/${user.userID}?personFields=photos&key=${process.env.REACT_APP_GOOGLE_API_KEY}`)
               .then((response) => {
                 const imgUrl = response.data.photos
@@ -272,7 +271,7 @@ export const loadEvents = (calendarId, accessToken) => (dispatch) => {
       return events;
     })
     .then(events => dispatch(saveCalendarEvents(events)))
-    .catch(err => alert(JSON.stringify(err)));
+    .catch(err => alert(`load event:${JSON.stringify(err)}`));
 };
 
 /**
