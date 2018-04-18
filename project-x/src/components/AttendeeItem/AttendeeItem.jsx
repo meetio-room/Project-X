@@ -4,12 +4,10 @@ import './AttendeeItem.css';
 /**
  * Use: <attendeeItem img="" name=""/>
  */
-const attendeeItem=(props)=>{
-  console.log(props.name)
-  return (
+const attendeeItem = props => (
   <div className="AttendeeItem">
-    <img src={props.img} alt={""}/>
+    <img src={props.img} alt={''}/>
     <div className = "AttendeeItem-name">{props.name}</div>
   </div>
-);}
+);
 export default attendeeItem;

@@ -38,5 +38,12 @@
         </host>
     </universal-links>
     <icon src="res/icon/android/logo.png" />
+    <plugin name="cordova-plugin-background-mode" spec="^0.7.2" />
+    <plugin name="cordova-plugin-x-toast" spec="^2.6.2" />
+    <plugin name="cordova-plugin-network-information" spec="^2.0.1" />
+    <plugin name="cordova-plugin-android-wifi-manager" spec="^1.2.0" />
+    <plugin name="cordova-plugin-brightness" spec="^0.2.0" />
+    <plugin name="cordova-plugin-screen-locker" spec="^0.2.2" />
+    <plugin name="cordova-plugin-camera" spec="^4.0.2" />
     <engine name="android" spec="^7.0.0" />
 </widget>

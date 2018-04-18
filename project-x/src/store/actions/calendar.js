@@ -1,7 +1,9 @@
 import axios from 'axios';
+import moment from 'moment';
 import Device from '../../device';
 import store from '../store';
 
+const calendarStore = store.getState().calendar;
 /**
 *  Select current calendar by id
 * @param {string} id - calendar id
@@ -41,7 +43,6 @@ const setAvailableRoom = timeToEvent => ({
     status: 'Available',
     timeStart: '',
     eventName: '',
-    description: '',
     timeEnd: '',
     BtnName: 'Quick book for now!',
     timeToNextEvent: timeToEvent,
@@ -55,7 +56,6 @@ const setReservedRoom = timeToEvent => ({
     timeStart: '',
     BtnName: 'Quick check-in',
     eventName: '',
-    description: '',
     timeEnd: '',
     timeToNextEvent: timeToEvent,
   },
@@ -66,7 +66,6 @@ const setBusyRoom = (event, timeStart, timeEnd) => ({
   payload: {
     status: 'Busy',
     eventName: event.name,
-    description: event.description,
     timeStart,
     timeEnd,
     BtnName: 'View',
@@ -226,7 +225,9 @@ export const loadCurrentEvent = event => (dispatch) => {
 * @returns { action } dispatch action
 */
 export const loadEvents = (calendarId, accessToken) => (dispatch) => {
-  axios.get(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?access_token=${accessToken}`)
+  const curTime = encodeURIComponent(moment().format());
+  const maxTime = encodeURIComponent(moment().add(14, 'days').format());
+  axios.get(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?access_token=${accessToken}&singleEvents=true&timeMin=${curTime}&timeMax=${maxTime}`)
     .then((res) => { // get events from google
       const result = res.data;
       const calendarEvents = [];
@@ -235,15 +236,14 @@ export const loadEvents = (calendarId, accessToken) => (dispatch) => {
         if (e.end) {
           const endDatetime = Date.parse(e.end.dateTime);
           const attendees = e.attendees ?
-            e.attendees.filter(a => a.responseStatus === 'accepted' && !a.self)
-            : [{ email: e.creator.email }];
+            e.attendees.filter(a => a.responseStatus === 'accepted' && !a.resource)
+            : [];
           if (endDatetime > curDate) {
             const event = {
               name: e.summary,
               id: e.id,
               start: e.start.dateTime,
               end: e.end.dateTime,
-              description: e.description,
               attendees,
             };
             calendarEvents.push(event);
@@ -256,19 +256,22 @@ export const loadEvents = (calendarId, accessToken) => (dispatch) => {
     .then((events) => { // load attendees image url for first event
       if (events.length > 0) {
         events[0].attendees.forEach((a) => {
-          const user = store.getState().calendar.people.filter(u => u.email === a.email)[0];
+          const user = calendarStore.people.filter(u => u.email === a.email)[0];
           if (user) {
             a.name = a.email.split('@')[0].replace('.', ' ');
             axios.get(`https://people.googleapis.com/v1/people/${user.userID}?personFields=photos&key=${process.env.REACT_APP_GOOGLE_API_KEY}`)
               .then((response) => {
-                const imgUrl = response.data.photos ? response.data.photos[0].url : '';
+                const imgUrl = response.data.photos
+                  ? response.data.photos[0].url
+                  : 'https://res.cloudinary.com/demo/image/upload/w_100,h_100,c_thumb,g_face,r_20,d_avatar.png/non_existing_id.png'; // default image
                 a.img = imgUrl;
-              });
+              }).catch(err => alert(`profile err:${err}`));
           }
         });
-        dispatch(saveCalendarEvents(events));
       }
-    });
+      dispatch(saveCalendarEvents(events));
+    })
+    .catch(err => alert(JSON.stringify(err)));
 };
 
 /**
@@ -303,8 +306,7 @@ export const createCalendar = (calendarName, accessToken) => {
 *  event={
   *   start:"",
   *   end:"",
-  *   summary: "",
-  *   description: ""
+  *   summary: ""
   *  }
   *  @param {string} calendarId - google calendar id
   *  @param {string} access_token - user token for google api
@@ -319,7 +321,6 @@ export const createEvent = (event, calendarId, accessToken) => { // should add a
       dateTime: event.end.format(),
       timeZone: 'Europe/Kiev',
     },
-    description: event.description,
     summary: event.summary || '',
   };
   const headers = {
@@ -335,6 +336,7 @@ export const createEvent = (event, calendarId, accessToken) => { // should add a
           name: res.data.summary,
           start: res.data.start.dateTime,
           end: res.data.end.dateTime,
+          attendees: [],
         };
         dispatch(saveEvent(newEvent));
       })

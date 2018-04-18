@@ -5,7 +5,7 @@ const initialState = {
   allCalendars: [],
   currentCalendar: localStorage.getItem('calendarId') || '',
   currentCalendarEvents: JSON.parse(localStorage.getItem('Events')) || [],
-  people:[],
+  people: [],
 
   access_token: '',
   loading: false,
@@ -125,8 +125,8 @@ export default function calendar(state = initialState, action) {
     {
       return {
         ...state,
-        people: [...action.payload]
-      }
+        people: [...action.payload],
+      };
     }
     case 'ERROR_HANDLER':
     {
