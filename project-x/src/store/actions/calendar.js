@@ -264,14 +264,14 @@ export const loadEvents = (calendarId, accessToken) => (dispatch) => {
                   ? response.data.photos[0].url
                   : 'https://res.cloudinary.com/demo/image/upload/w_100,h_100,c_thumb,g_face,r_20,d_avatar.png/non_existing_id.png'; // default image
                 a.img = imgUrl;
-              }).catch(err => alert(`profile err:${err}`));
+              });
           }
         });
       }
       return events;
     })
     .then(events => dispatch(saveCalendarEvents(events)))
-    .catch(err => alert(`load event:${JSON.stringify(err)}`));
+    .catch(() => dispatch(refreshToken()));
 };
 
 /**
@@ -338,6 +338,7 @@ export const createEvent = (event, calendarId, accessToken) => { // should add a
           end: res.data.end.dateTime,
           attendees: [],
         };
+        Device.showToast('Event added!');
         dispatch(saveEvent(newEvent));
       })
       .catch(() => dispatch(errorHandler('Event doesn`t created\nPlease re-run the program!')));

@@ -1,3 +1,4 @@
+/* global window localStorage navigator  */
 import * as config from './config';
 
 class Device {
@@ -121,6 +122,10 @@ class Device {
       reject(new Error('camera failed'));
     }
   });
+
+  static showAlert(message) {
+    navigator.notification.alert(message, null, 'Room Manager', 'OK');
+  }
 
   // Events
   /**

@@ -41,8 +41,5 @@ export const comparePhoto = imageSrc => (dispatch) => {
     },
   }).then((response) => {
     alert(JSON.stringify(response.data.images[0].candidates[0].subject_id));
-    // this.props.recognizeUser(response.data);
-  }).catch((error) => {
-    alert(JSON.stringify(error));
   });
 };

@@ -33,7 +33,7 @@ const roomStatus = (props) => {
   } else if (getTimeString(props.timeToNextEvent) === '- :-' || time > 864e5) {
     timeToEvent = 'free for today';
   } else {
-    timeToEvent = (<span>the nearest time in <br/>{`${getTimeString(props.timeToNextEvent).replace(':', 'h ')} min`}</span>);
+    timeToEvent = (<span>the nearest time in <br />{`${getTimeString(props.timeToNextEvent).replace(':', 'h ')} min`}</span>);
   }
 
   const tToEnd = props.timeEventFinish - moment();
@@ -53,44 +53,47 @@ const roomStatus = (props) => {
 
 
   return (
-    <div className = "RoomStatus" >
-      <div className = { `header header-${props.status}`} >
-        <div className = { `container container-${props.status}`} >
-          <div className = { `status status-${props.status}`} >
+    <div className="RoomStatus" >
+      <div className={`header header-${props.status}`} >
+        <div className={`container container-${props.status}`} >
+          <div className={`status status-${props.status}`} >
             {statusText}
           </div>
-          { props.status === 'Busy' ?
-            <div>
-              <div className = "EventDuration" >
-                { `will finish in ${timeToFinish}` }
-              </div>
-              <div className = "Attendees-section">
-                <ul className = "Attendees-list">
-                  { (props.attendees || []).map(a => <li>
-                    <AttendeeItem name={a.name} img={a.img}/>
-                  </li>)}
-                </ul>
-              </div>
+          {props.status === 'Busy'
+          ? <div>
+            <div className="EventDuration" >
+              {`will finish in ${timeToFinish}`}
             </div>
-            : <div>
-              <div className = "EventStart" >
-                { timeToEvent }
-              </div>
-              <div className = { `arrow arrow-${props.status}`} > &raquo; </div>
+            <div className="Attendees-section">
+              <ul className="Attendees-list">
+                { (props.attendees || []).map(a => (
+                  <li>
+                    <AttendeeItem name={a.name} img={a.img} />
+                  </li>))}
+              </ul>
             </div>
+          </div>
+          : <div>
+            <div className="EventStart" >
+              {timeToEvent}
+            </div>
+            <div className={`arrow arrow-${props.status}`} >
+                  &raquo;
+            </div>
+          </div>
           }
         </div>
       </div>
 
-      <div className = { `footer footer-${props.status}`} >
-        <div className = "container" >
-         <div className = "clock" > { getClock(props.currentTime) } </div>
+      <div className={`footer footer-${props.status}`} >
+        <div className="container" >
+          <div className="clock" > {getClock(props.currentTime)} </div>
           <button
-            to = "/newEvent"
-            onClick = { props.clicked }
-            className = { `btn btn-${props.status}`}
+            to="/newEvent"
+            onClick={props.clicked}
+            className={`btn btn-${props.status}`}
           >
-            { props.BtnName }
+            {props.BtnName}
           </button>
         </div>
       </div>

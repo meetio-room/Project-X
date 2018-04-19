@@ -1,5 +1,4 @@
 /* global localStorage */
-import Device from '../../device';
 
 const initialState = {
   allCalendars: [],
@@ -94,7 +93,6 @@ export default function calendar(state = initialState, action) {
       } else {
         events.push({ ...action.payload });
       }
-      Device.showToast('Event added!');
       return {
         ...state,
         currentCalendarEvents: events,
@@ -118,11 +116,6 @@ export default function calendar(state = initialState, action) {
         ...state,
         people: [...action.payload],
       };
-    }
-    case 'ERROR_HANDLER':
-    {
-      navigator.notification.alert(action.payload, null, 'Room Manager', 'OK');
-      return state;
     }
     case 'LOAD_CALENDAR_EVENTS':
     {

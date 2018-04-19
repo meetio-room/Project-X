@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 /**
    * Convert integer time to hh:mm format
    * @param {integer} dateTime - time in integer format
@@ -28,4 +30,22 @@ export const getTimeString = (dateTime) => {
     return `${m}`;
   }
   return `${h}:${m}`;
+};
+
+/**
+ * @param {[]} eventsArr -- array of events
+ * @param {{}} event -- some event
+ * @returns {[]} array of conflict events or empty array
+ */
+export const getConflictEvents = (eventsArr, event) => {
+  const result = eventsArr.filter((e) => {
+    const isStartInTheAnotherEvent = moment(event.start) >= moment(e.start)
+                                    && moment(event.start) < moment(e.end);
+    const isEndInTheAnotherEvent = moment(event.end) >= moment(e.start)
+                                    && moment(event.end) < moment(e.end);
+    const isEventCoverAnotherEvent = moment(e.start) >= moment(event.start)
+                                     && moment(e.end) <= moment(event.end);
+    return isStartInTheAnotherEvent || isEndInTheAnotherEvent || isEventCoverAnotherEvent;
+  });
+  return result;
 };

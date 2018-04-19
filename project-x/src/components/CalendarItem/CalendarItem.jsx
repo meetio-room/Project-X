@@ -6,9 +6,13 @@ import './CalendarItem.css';
  * @returns {component} stateless react component
  */
 const calendarItem = props => (
-  <div className = "CalendarItem" onClick = { props.clicked } >
-    <div className = "calendarName"> { props.calendarName } </div>
-    <div className = "calendarId" > { props.calendarId } </div>
+  <div
+    className="CalendarItem"
+    onClick={props.clicked}
+    onKeyPress={props.clicked}
+  >
+    <div className="calendarName">{props.calendarName}</div>
+    <div className="calendarId">{props.calendarId}</div>
   </div>
 );
 

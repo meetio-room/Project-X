@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import CalendarList from '../containers/Calendars/CalendarsList.jsx';
+import CalendarList from '../containers/Calendars/CalendarsList';
 import { login } from '../store/actions/calendar';
-import RoomManager from '../containers/RoomManager/RoomManager.jsx';
-import Spinner from '../components/UI/Spinner/Spinner.jsx';
+import RoomManager from '../containers/RoomManager/RoomManager';
+import Spinner from '../components/UI/Spinner/Spinner';
 
 class App extends Component {
   constructor(props) {
@@ -12,18 +12,7 @@ class App extends Component {
       calendarListShow: false,
     };
   }
-  toggleCalendarListVisibility = isShow => this.setState({ calendarListShow: isShow });
 
-  render() {
-    return (
-      <div>
-        <Spinner show = { this.props.isLoading }/>
-      { this.state.calendarListShow ?
-        <CalendarList clicked = { this.toggleCalendarListVisibility } /> :
-        <RoomManager/> }
-    </div>
-    );
-  }
   componentDidMount() {
     this.props.loadProfile();
     if (this.props.calendarId) {
@@ -32,7 +21,21 @@ class App extends Component {
       this.toggleCalendarListVisibility(true);
     }
   }
+
+  toggleCalendarListVisibility = isShow => this.setState({ calendarListShow: isShow });
+
+  render() {
+    return (
+      <div>
+        <Spinner show={this.props.isLoading} />
+        { this.state.calendarListShow
+          ? <CalendarList clicked={this.toggleCalendarListVisibility} />
+          : <RoomManager /> }
+      </div>
+    );
+  }
 }
+
 const mapStateToProps = state => ({
   calendarId: state.calendar.currentCalendar,
   isLoading: state.calendar.loading,

@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import CameraIcon from 'react-icons/lib/fa/camera';
 import moment from 'moment';
+import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux';
-
 import Device from '../../device';
-import EventNames from '../../components/EventConstructor/EventName/EventNames.jsx';
-import EventStarts from '../../components/EventConstructor/EventTimeStart/EventStarts.jsx';
-import EventDuration from '../../components/EventConstructor/EventDuration/EventDuration.jsx';
-import ConflictEvents from '../../components/EventConstructor/ConflictEvents/ConflictEvents.jsx';
+import EventNames from '../../components/EventConstructor/EventName/EventNames';
+import EventStarts from '../../components/EventConstructor/EventTimeStart/EventStarts';
+import EventDuration from '../../components/EventConstructor/EventDuration/EventDuration';
+import ConflictEvents from '../../components/EventConstructor/ConflictEvents/ConflictEvents';
 import { createEvent } from '../../store/actions/calendar';
 import { comparePhoto } from '../../store/actions/rekognize';
+import { getConflictEvents } from '../../service/util';
 import './EventBuilder.css';
 
 class EventBuilder extends Component {
@@ -19,16 +20,13 @@ class EventBuilder extends Component {
     if (this.deltaHours > 30) this.deltaHours -= 30;
     this.state = {
       errors: {},
-
       eventNames: ['call', 'conference'],
       eventStarts: ['now', this.deltaHours, this.deltaHours + 30, this.deltaHours + 60],
       eventDurations: ['5', '15', '30', '45', '60'],
-
       activeName: '',
       activeEvStart: '',
       activeEvStartId: '',
       activeEvDuration: '',
-
       customNameShow: false,
       customEvStart: false,
       customEvDuration: false,
@@ -36,14 +34,22 @@ class EventBuilder extends Component {
     this.newEvent = {};
     this.timer = null;
   }
-
-  shouldComponentUpdate(nextProps) {
-    if (nextProps.show !== true && this.props.show !== true) return false;
-    return true;
+  componentDidMount() {
+    const that = this;
+    that.timer = setInterval(() => {
+      that.deltaHours = 60 - moment().minute();
+      if (that.deltaHours > 30) that.deltaHours -= 30;
+      that.setState({
+        eventStarts: ['now', that.deltaHours, that.deltaHours + 30, that.deltaHours + 60],
+      });
+    }, 1000);
   }
-
-  onInputHandler = (e) => {
-    this.newEvent.summary = e.target.value;
+  shouldComponentUpdate(nextProps) {
+    return nextProps.show || this.props.show;
+  }
+  componentWillUnmount() {
+    clearInterval(this.timer);
+    this.timer = null;
   }
 
   onChangeDateTimeHandler = (id, dateTime) => {
@@ -69,39 +75,12 @@ class EventBuilder extends Component {
     }
     this.checkEventErrors();
   }
-
-  checkEventErrors = () => {
-    const errors = {};
-    if (this.newEvent.start && this.newEvent.end) { // validation
-      if (this.newEvent.start - this.newEvent.end >= 0) {
-        errors.eventEnd = 'The event has start faster than the end!';
-      } else {
-        errors.eventEnd = null;
-      }
-      this.setState({ errors });
-      const conflictEvents = this.getConflictEvents(this.newEvent);
-      errors.conflictEvents = conflictEvents;
-      this.setState({ errors });
-    }
-  }
-
-  getConflictEvents = (event) => {
-    const result = this.props.events.filter((e) => {
-      const isStartInTheAnotherEvent = moment(event.start) >= moment(e.start)
-                                      && moment(event.start) < moment(e.end);
-      const isEndInTheAnotherEvent = moment(event.end) >= moment(e.start)
-                                      && moment(event.end) < moment(e.end);
-      const isEventCoverAnotherEvent = moment(e.start) >= moment(event.start)
-                                       && moment(e.end) <= moment(event.end);
-      return isStartInTheAnotherEvent || isEndInTheAnotherEvent || isEventCoverAnotherEvent;
-    });
-    return result;
-  }
-
   onNameItemClickHandler = (sender) => {
     this.newEvent.summary = sender;
-    this.setState({ customNameShow: false });
-    this.setState({ activeName: sender });
+    this.setState({
+      customNameShow: false,
+      activeName: sender,
+    });
   }
 
   onCustomNameItemHandler = (sender) => {
@@ -186,20 +165,33 @@ class EventBuilder extends Component {
         navigator.notification.alert('Room will be busy in this time(or event time is incorrect)\nPlease select another time', null, 'Room Manager', 'OK');
         return;
       }
-      this.props.createCalendarEvent(this.newEvent, this.props.calendarId, this.props.token);
+      this.props.createEvent(this.newEvent, this.props.calendarId, this.props.token);
       this.closeEventBuilder();
     } else {
       navigator.notification.alert('Please choose time for event!', null, 'Room Manager', 'OK');
     }
   }
-
+  onInputHandler = e => this.newEvent.summary = e.target.value;
   identificateUser = () => {
     Device.createPhoto().then((img) => {
       Device.showToast('compared...');
-      this.props.compPhoto(img);
-    }).catch(err => alert(err));
+      this.props.comparePhoto(img);
+    });
   }
-
+  checkEventErrors = () => {
+    const errors = {};
+    if (this.newEvent.start && this.newEvent.end) { // validation
+      if (this.newEvent.start - this.newEvent.end >= 0) {
+        errors.eventEnd = 'The event has start faster than the end!';
+      } else {
+        errors.eventEnd = null;
+      }
+      this.setState({ errors });
+      const conflictEvents = getConflictEvents(this.props.events, this.newEvent);
+      errors.conflictEvents = conflictEvents;
+      this.setState({ errors });
+    }
+  }
   closeEventBuilder() {
     this.setState({
       activeName: '',
@@ -211,69 +203,53 @@ class EventBuilder extends Component {
       customEvDuration: false,
       errors: {},
     });
-    this.props.hideEventBuilder();
     this.newEvent = {};
+    this.props.hideEventBuilder();
   }
-
   render() {
     if (this.props.show === false) {
       return null;
     }
     return (
-      <div className = "EventBuilder" onDoubleClick={() => this.closeEventBuilder()} >
-        <ConflictEvents error={this.state.errors}/>
+      <div className="EventBuilder" onDoubleClick={() => this.closeEventBuilder()} >
+        <ConflictEvents error={this.state.errors} />
         <h2>Please choose event type</h2>
         <EventNames
-          active = {this.state.activeName}
-          itemClick = {this.onNameItemClickHandler}
-          names = {this.state.eventNames}
-          inputedValue = { this.onInputHandler }
-          error ={ this.state.errors }
-          customClick = {this.onCustomNameItemHandler}
-          showCustom={ this.state.customNameShow}
-          />
+          active={this.state.activeName}
+          itemClick={this.onNameItemClickHandler}
+          names={this.state.eventNames}
+          inputedValue={this.onInputHandler}
+          error={this.state.errors}
+          customClick={this.onCustomNameItemHandler}
+          showCustom={this.state.customNameShow}
+        />
 
         <h2>Please select the start of event</h2>
         <EventStarts
-          active = {this.state.activeEvStart}
-          activeId = {this.state.activeEvStartId}
-          itemClick = {this.onEvStartItemClickHandler}
-          eventStart = {this.state.eventStarts}
-          changeDateTime = {this.onChangeDateTimeHandler}
-          error = { this.state.errors }
-          customClick = {this.onCustomEvStartItemClickHandler}
-          showCustom = {this.state.customEvStart}/>
+          active={this.state.activeEvStart}
+          activeId={this.state.activeEvStartId}
+          itemClick={this.onEvStartItemClickHandler}
+          eventStart={this.state.eventStarts}
+          changeDateTime={this.onChangeDateTimeHandler}
+          error={this.state.errors}
+          customClick={this.onCustomEvStartItemClickHandler}
+          showCustom={this.state.customEvStart}
+        />
 
         <h2>Please select the duration of the event</h2>
         <EventDuration
-          active = {this.state.activeEvDuration}
-          itemClick = {this.onEvDurationItemClickHandler}
-          eventDurations = {this.state.eventDurations}
-          changeDateTime = {this.onChangeDateTimeHandler}
-          error = { this.state.errors }
-          customClick = {this.onCustomEvDurationItemClickHandler}
-          showCustom = { this.state.customEvDuration }
-          />
-        <button className="btn-confirm" onClick = { this.identificateUser }><CameraIcon/> Identify</button>
-        <button className="btn-confirm" onClick = { this.onConfirmClickHandler }>Confirm</button>
+          active={this.state.activeEvDuration}
+          itemClick={this.onEvDurationItemClickHandler}
+          eventDurations={this.state.eventDurations}
+          changeDateTime={this.onChangeDateTimeHandler}
+          error={this.state.errors}
+          customClick={this.onCustomEvDurationItemClickHandler}
+          showCustom={this.state.customEvDuration}
+        />
+        <button className="btn-confirm" onClick={this.identificateUser}><CameraIcon /> Identify</button>
+        <button className="btn-confirm" onClick={this.onConfirmClickHandler}>Confirm</button>
       </div>
     );
-  }
-
-  componentDidMount() {
-    const that = this;
-    that.timer = setInterval(() => {
-      that.deltaHours = 60 - moment().minute();
-      if (that.deltaHours > 30) that.deltaHours -= 30;
-      that.setState({
-        eventStarts: ['now', that.deltaHours, that.deltaHours + 30, that.deltaHours + 60],
-      });
-    }, 1000);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.timer);
-    this.timer = null;
   }
 }
 const mapStateToProps = state => ({
@@ -281,9 +257,10 @@ const mapStateToProps = state => ({
   calendarId: state.calendar.currentCalendar,
   events: state.calendar.currentCalendarEvents,
 });
-const mapDispatchToProps = dispatch => ({
-  createCalendarEvent: (event, calendarId, accessToken) =>
-    dispatch(createEvent(event, calendarId, accessToken)),
-  compPhoto: img => dispatch(comparePhoto(img)),
-});
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  createEvent,
+  comparePhoto,
+}, dispatch);
+
 export default connect(mapStateToProps, mapDispatchToProps)(EventBuilder);

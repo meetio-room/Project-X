@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import RoomStatus from '../../components/RoomStatusWidget/RoomStatus.jsx';
-import EventBuilder from '../EventBuilder/EventBuilder.jsx';
+import RoomStatus from '../../components/RoomStatusWidget/RoomStatus';
+import EventBuilder from '../EventBuilder/EventBuilder';
+import Setting from '../Settings/Settings';
 import { loadEvents, loadCurrentEvent, refreshToken } from '../../store/actions/calendar';
 import Device from '../../device';
 import * as config from '../../config';
-import Setting from '../Settings/Settings.jsx';
+
 
 class RoomManager extends Component {
   constructor(props) {
@@ -14,50 +15,9 @@ class RoomManager extends Component {
       currentTime: new Date(),
       isEventBuilderShow: false,
       isSettingsShow: false,
-      img: '',
     };
     this.timer = null;
     this.clock = null;
-  }
-
-  onRoomStatusBtnClickHandler = () => {
-    this.setEventBuilderVisibility(true);
-  }
-  setEventBuilderVisibility = (show) => {
-    this.setState({ isEventBuilderShow: show });
-  }
-  onScreenClickHandler = () => {
-    Device.setMode('MIDDLE_MODE');
-    Device.quinaryClick(() => {
-      this.setState({ isSettingsShow: true });
-    });
-  }
-  hideSettings = () => {
-    this.setState({ isSettingsShow: false });
-  }
-
-  render() {
-    return (
-      <div onClick={ this.onScreenClickHandler } >
-      <RoomStatus
-      status = { this.props.room.status }
-      eventName = { this.props.room.eventName }
-      timeEventBegin = { this.props.room.timeStart }
-      timeEventFinish = { this.props.room.timeEnd }
-      timeToNextEvent = { this.props.room.timeToNextEvent }
-      description = { this.props.room.description }
-      currentTime = { this.state.currentTime }
-      attendees = {this.props.events[0] ? this.props.events[0].attendees : []}
-      BtnName = { this.props.room.BtnName }
-      clicked = { () => this.onRoomStatusBtnClickHandler() }
-      />
-      <EventBuilder
-      show = { this.state.isEventBuilderShow }
-      hideEventBuilder = { () => this.setEventBuilderVisibility(false) }
-      />
-      <Setting show ={this.state.isSettingsShow} hideWindow = {this.hideSettings}/>
-      </div>
-    );
   }
 
   componentDidMount() {
@@ -99,9 +59,53 @@ class RoomManager extends Component {
       that.props.loadCurrentState(that.props.events[0]);
     }, 1000);
   }
+
   componentWillUnmount() {
     clearInterval(this.timer);
     clearInterval(this.clock);
+  }
+
+  onRoomStatusBtnClickHandler = () => {
+    this.setEventBuilderVisibility(true);
+  }
+
+  onScreenClickHandler = () => {
+    Device.setMode('MIDDLE_MODE');
+    Device.quinaryClick(() => {
+      this.setState({ isSettingsShow: true });
+    });
+  }
+
+  setEventBuilderVisibility = (show) => {
+    this.setState({ isEventBuilderShow: show });
+  }
+
+  hideSettings = () => {
+    this.setState({ isSettingsShow: false });
+  }
+
+  render() {
+    return (
+      <div onClick={this.onScreenClickHandler} >
+        <RoomStatus
+          status={this.props.room.status}
+          eventName={this.props.room.eventName}
+          timeEventBegin={this.props.room.timeStart}
+          timeEventFinish={this.props.room.timeEnd}
+          timeToNextEvent={this.props.room.timeToNextEvent}
+          description={this.props.room.description}
+          currentTime={this.state.currentTime}
+          attendees={this.props.events[0] ? this.props.events[0].attendees : []}
+          BtnName={this.props.room.BtnName}
+          clicked={() => this.onRoomStatusBtnClickHandler()}
+        />
+        <EventBuilder
+          show={this.state.isEventBuilderShow}
+          hideEventBuilder={() => this.setEventBuilderVisibility(false)}
+        />
+        <Setting show={this.state.isSettingsShow} hideWindow={this.hideSettings} />
+      </div>
+    );
   }
 }
 

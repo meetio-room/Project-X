@@ -1,3 +1,4 @@
+/* global window document */
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
@@ -10,9 +11,9 @@ require('dotenv').config();
 
 
 const startApp = () => {
-  ReactDOM.render(<Provider store = { store }>
-      <App />
-    </Provider>, document.getElementById('root'));
+  ReactDOM.render(<Provider store={store}>
+    <App />
+  </Provider>, document.getElementById('root'));
   Device.fulscreenMode();
   window.cordova.plugins.backgroundMode.enable();
 };

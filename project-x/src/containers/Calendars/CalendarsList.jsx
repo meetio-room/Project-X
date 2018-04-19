@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import './CalendarList.css';
-import CalendarItem from '../../components/CalendarItem/CalendarItem.jsx';
+import CalendarItem from '../../components/CalendarItem/CalendarItem';
 import { createCalendar, loadEvents, selectCalendar } from '../../store/actions/calendar';
+import './CalendarList.css';
 
 class CalendarList extends Component {
   constructor(props) {
@@ -39,26 +39,30 @@ class CalendarList extends Component {
       <div className="CalendarList" >
         <h2>Select Calendars for device:</h2>
         <ul>
-          { this.props.calendars.map(calendar =>
+          { this.props.calendars.map(calendar => (
             <CalendarItem
-              key = { calendar.id }
-              calendarId = { calendar.id }
-              calendarName = { calendar.name }
-              clicked = {() => this.onCalendarItemClickHandler(calendar.id)}
-            />)
+              key={calendar.id}
+              calendarId={calendar.id}
+              calendarName={calendar.name}
+              clicked={() => this.onCalendarItemClickHandler(calendar.id)}
+            />
+            ))
           }
         </ul>
-        { this.state.showCreateCalendarInput ?
-          <input
-            placeholder = "enter name for calendar"
-            type = "text"
-            ref = { inp => this.newCalendarInput = inp }
-            className = "newCalendarInput" />
-          : null }
+        { this.state.showCreateCalendarInput
+          ? <input
+            placeholder="enter name for calendar"
+            type="text"
+            ref={inp => this.newCalendarInput = inp}
+            className="newCalendarInput"
+          />
+          : null
+        }
         <button
-           onClick = {this.onAddCalendarClickHandler }
-          className = "AddBtn" >
-           +
+          onClick={this.onAddCalendarClickHandler}
+          className="AddBtn"
+        >
+          +
         </button>
       </div>
     );

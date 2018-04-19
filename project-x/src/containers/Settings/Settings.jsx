@@ -1,11 +1,12 @@
+/* global localStorage window navigator */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import RekognizeForm from '../../components/RekognizeRegistry/RekognizeRegistry';
 import './Settings.css';
-import * as config from '../../config';
-import RekognizeForm from '../../components/RekognizeRegistry/RekognizeRegistry.jsx';
 import { insertPhotoToGallery, clearGallery } from '../../store/actions/rekognize';
 import refreshBg from '../../images/refresh.png';
 import Device from '../../device';
+import * as config from '../../config';
 
 class Settings extends Component {
   constructor(props) {
@@ -23,15 +24,6 @@ class Settings extends Component {
     window.plugins.googleplus.logout();
     window.location.reload();
   }
-  updateCheck = () => {
-    this.setState((oldState) => {
-      Device.saveModeEnable = !oldState.saveModeEnable;
-      localStorage.setItem('saveModeON', !oldState.saveModeEnable);
-      return {
-        saveModeEnable: !oldState.saveModeEnable,
-      };
-    });
-  }
 
   onBtnAddUserClickHandler = () => {
     this.setState(prevState => ({
@@ -48,9 +40,19 @@ class Settings extends Component {
       } else {
         navigator.notification.alert('Error!\nemail are required', null, 'Room Manager', 'OK');
       }
-    }).catch(err => alert(err));
+    });
     eventSubmit.preventDefault();
     eventSubmit.stopPropagation();
+  }
+
+  updateCheck = () => {
+    this.setState((oldState) => {
+      Device.saveModeEnable = !oldState.saveModeEnable;
+      localStorage.setItem('saveModeON', !oldState.saveModeEnable);
+      return {
+        saveModeEnable: !oldState.saveModeEnable,
+      };
+    });
   }
 
   render() {
@@ -61,23 +63,24 @@ class Settings extends Component {
         <div className="Settings-content">
           <h2>{config.PROGRAM_NAME}</h2>
           <div className="version">{`version: ${config.VERSION}`}</div>
-          <hr/>
+          <hr />
           <div>
-          <label class="switch">
-            { this.state.saveModeEnable ? <input type="checkbox" id="saveModeCheck" onChange={this.updateCheck} checked/>
-              : <input type="checkbox" id="saveModeCheck" onChange={this.updateCheck}/>
+            <label className="switch">
+              { this.state.saveModeEnable ? <input type="checkbox" id="saveModeCheck" onChange={this.updateCheck} checked />
+              : <input type="checkbox" id="saveModeCheck" onChange={this.updateCheck} />
             }
-            <span class="slider round"></span>
-          </label>
-           <label
-            htmlFor="saveModeCheck"
-            style={{
+              <span className="slider round" />
+            </label>
+            <label
+              htmlFor="saveModeCheck"
+              style={{
               position: 'relative',
               top: '-10px',
               left: '5px',
               'font-size': '20px',
             }}
-            >{`Save mode ${this.state.saveModeEnable ? 'enabled' : 'disabled'}`}</label>
+            >{`Save mode ${this.state.saveModeEnable ? 'enabled' : 'disabled'}`}
+            </label>
           </div>
           <p>Erase all data && Refresh</p>
           <button className="btn-refresh" style={{ backgroundImage: `url(${refreshBg})` }} onClick={this.onRefreshBtnClickHandler}>Reset</button>
@@ -87,10 +90,11 @@ class Settings extends Component {
             <button className="btn-rekognize" onClick={this.props.resetGallery}>Reset users</button>
           </div>
           <RekognizeForm
-            show ={this.state.showRekognizeForm}
-            onAdd={this.onRekognizeSubmit}/>
+            show={this.state.showRekognizeForm}
+            onAdd={this.onRekognizeSubmit}
+          />
         </div>
-          <button className="btn-close" onClick={() => this.props.hideWindow()}>Close</button>
+        <button className="btn-close" onClick={() => this.props.hideWindow()}>Close</button>
       </div>
     );
   }

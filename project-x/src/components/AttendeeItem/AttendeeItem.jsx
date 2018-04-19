@@ -6,8 +6,8 @@ import './AttendeeItem.css';
  */
 const attendeeItem = props => (
   <div className="AttendeeItem">
-    <img src={props.img} alt={''}/>
-    <div className = "AttendeeItem-name">{props.name}</div>
+    <img src={props.img} alt="" />
+    <div className="AttendeeItem-name">{props.name}</div>
   </div>
 );
 export default attendeeItem;
