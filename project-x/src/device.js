@@ -21,7 +21,7 @@ class Device {
   * Show toast with some message
   * @param {string} message - user message for toast
   */
-  static showToast = (message) => {
+  static showToast(message) {
     window.plugins.toast.showWithOptions({
       message,
       duration: '3000',
@@ -101,27 +101,29 @@ class Device {
   /**
    * Return Promise with photo from front Camera
    */
-  static createPhoto = () => new Promise((resolve, reject) => {
-    const onSuccess = image => resolve(image);
-    const onFail = message => reject(new Error(`Failed because: ${message}`));
+  static createPhoto() {
+    return new Promise((resolve, reject) => {
+      const onSuccess = image => resolve(image);
+      const onFail = message => reject(new Error(`Failed because: ${message}`));
 
-    if (navigator.camera) {
-      navigator.camera.cleanup();
-      navigator.camera.getPicture(
-        onSuccess, onFail,
-        {
-          quality: 50,
-          destinationType: window.Camera.DestinationType.DATA_URL,
-          encodingType: window.Camera.EncodingType.PNG,
-          cameraDirection: 1,
-          targetWidth: 200,
-          targetHeight: 200,
-        },
-      );
-    } else {
-      reject(new Error('camera failed'));
-    }
-  });
+      if (navigator.camera) {
+        navigator.camera.cleanup();
+        navigator.camera.getPicture(
+          onSuccess, onFail,
+          {
+            quality: 50,
+            destinationType: window.Camera.DestinationType.DATA_URL,
+            encodingType: window.Camera.EncodingType.PNG,
+            cameraDirection: 0,
+            targetWidth: 200,
+            targetHeight: 200,
+          },
+        );
+      } else {
+        reject(new Error('camera failed'));
+      }
+    });
+  }
 
   static showAlert(message) {
     navigator.notification.alert(message, null, config.PROGRAM_NAME, 'OK');

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import CalendarItem from '../../components/CalendarItem/CalendarItem';
 import { createCalendar, loadEvents, selectCalendar } from '../../store/actions/calendar';
+import Device from '../../device';
 import './CalendarList.css';
 
 class CalendarList extends Component {
@@ -23,7 +24,7 @@ class CalendarList extends Component {
       if (name && isNameUniq) {
         this.props.createCalendar(name, this.props.token);
       } else if (name !== '' || isNameUniq) {
-        navigator.notification.alert('Error!\n name must be uniq', null, 'Room Manager', 'OK');
+        Device.showAlert('Error!\n name must be uniq');
         return;
       }
     }

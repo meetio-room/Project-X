@@ -178,13 +178,13 @@ class EventBuilder extends Component {
       const isHasErrors = this.state.errors.eventEnd || this.state.errors.conflictEvents.length !== 0
                             || this.state.errors.eventStart;
       if (isHasErrors) {
-        navigator.notification.alert('Room will be busy in this time(or event time is incorrect)\nPlease select another time', null, 'Room Manager', 'OK');
+        Device.showAlert('Room will be busy in this time(or event time is incorrect)\nPlease select another time');
         return;
       }
       this.props.createEvent(this.newEvent, this.props.calendarId, this.props.token);
       this.closeEventBuilder();
     } else {
-      navigator.notification.alert('Please choose time for event!', null, 'Room Manager', 'OK');
+      Device.showAlert('Please choose time for event!');
     }
   }
 
