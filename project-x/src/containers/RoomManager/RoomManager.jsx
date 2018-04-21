@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import RoomStatus from '../../components/RoomStatusWidget/RoomStatus';
 import EventBuilder from '../EventBuilder/EventBuilder';
@@ -30,12 +31,12 @@ class RoomManager extends Component {
 
       let tokenExpires = localStorage.getItem('expires_in');
       if (that.props.currentCalendar && navigator.connection.type !== window.Connection.NONE) {
-        that.props.loadCalenadarEvents(that.props.currentCalendar, that.props.token);
+        that.props.loadEvents(that.props.currentCalendar, that.props.token);
       }
       if (tokenExpires) {
         tokenExpires -= syncStep;
         if (tokenExpires <= 0 && navigator.connection.type !== window.Connection.NONE) { // refresh token
-          that.props.updateToken();
+          that.props.refreshToken();
         }
         localStorage.setItem('expires_in', tokenExpires);
       }
@@ -56,7 +57,7 @@ class RoomManager extends Component {
           Device.setMode('IDLE_MODE');
         }
       }
-      that.props.loadCurrentState(that.props.events[0]);
+      that.props.loadCurrentEvent(that.props.events[0]);
     }, 1000);
   }
 
@@ -70,6 +71,7 @@ class RoomManager extends Component {
   }
 
   onScreenClickHandler = () => {
+    event.stopPropagation();
     Device.setMode('MIDDLE_MODE');
     Device.quinaryClick(() => {
       this.setState({ isSettingsShow: true });
@@ -80,13 +82,9 @@ class RoomManager extends Component {
     this.setState({ isEventBuilderShow: show });
   }
 
-  hideSettings = () => {
-    this.setState({ isSettingsShow: false });
-  }
-
   render() {
     return (
-      <div onClick={this.onScreenClickHandler} >
+      <div onClick={this.onScreenClickHandler}>
         <RoomStatus
           status={this.props.room.status}
           eventName={this.props.room.eventName}
@@ -103,7 +101,10 @@ class RoomManager extends Component {
           show={this.state.isEventBuilderShow}
           hideEventBuilder={() => this.setEventBuilderVisibility(false)}
         />
-        <Setting show={this.state.isSettingsShow} hideWindow={this.hideSettings} />
+        <Setting
+          show={this.state.isSettingsShow}
+          hideWindow={() => this.setState({ isSettingsShow: false })}
+        />
       </div>
     );
   }
@@ -115,10 +116,11 @@ const mapStateToProps = state => ({
   currentCalendar: state.calendar.currentCalendar,
   room: state.calendar.room,
 });
-const mapDispatchToProps = dispatch => ({
-  loadCalenadarEvents: (calendarId, token) => dispatch(loadEvents(calendarId, token)),
-  loadCurrentState: event => dispatch(loadCurrentEvent(event)),
-  updateToken: () => dispatch(refreshToken()),
-});
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  loadEvents,
+  loadCurrentEvent,
+  refreshToken,
+}, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(RoomManager);

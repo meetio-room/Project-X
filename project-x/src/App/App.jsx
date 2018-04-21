@@ -8,28 +8,31 @@ import Spinner from '../components/UI/Spinner/Spinner';
 class App extends Component {
   constructor(props) {
     super(props);
+    this.setCalendarListVisibility = this.setCalendarListVisibility.bind(this);
     this.state = {
-      calendarListShow: false,
+      isCalendarListShow: false,
     };
   }
 
   componentDidMount() {
     this.props.loadProfile();
     if (this.props.calendarId) {
-      this.toggleCalendarListVisibility(false);
+      this.setCalendarListVisibility(false);
     } else {
-      this.toggleCalendarListVisibility(true);
+      this.setCalendarListVisibility(true);
     }
   }
 
-  toggleCalendarListVisibility = isShow => this.setState({ calendarListShow: isShow });
+  setCalendarListVisibility(isShow) {
+    this.setState({ isCalendarListShow: isShow });
+  }
 
   render() {
     return (
       <div>
         <Spinner show={this.props.isLoading} />
-        { this.state.calendarListShow
-          ? <CalendarList clicked={this.toggleCalendarListVisibility} />
+        { this.state.isCalendarListShow
+          ? <CalendarList clicked={this.setCalendarListVisibility} />
           : <RoomManager /> }
       </div>
     );

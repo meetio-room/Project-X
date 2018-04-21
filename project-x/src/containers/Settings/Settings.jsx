@@ -1,6 +1,6 @@
-/* global localStorage window navigator */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import RekognizeForm from '../../components/RekognizeRegistry/RekognizeRegistry';
 import './Settings.css';
 import { insertPhotoToGallery, clearGallery } from '../../store/actions/rekognize';
@@ -19,7 +19,7 @@ class Settings extends Component {
   onRefreshBtnClickHandler = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('expires_in');
-    localStorage.removeItem('Events');
+    localStorage.removeItem('events');
     localStorage.removeItem('calendarId');
     window.plugins.googleplus.logout();
     window.location.reload();
@@ -35,7 +35,7 @@ class Settings extends Component {
     const eventSubmit = window.event;
     Device.createPhoto().then((img) => {
       if (eventSubmit.target.rekognizeEmail.value) {
-        this.props.insertToGallery(img, `${eventSubmit.target.rekognizeName.value}%%${eventSubmit.target.rekognizeEmail.value}`);
+        this.props.insertPhotoToGallery(img, `${eventSubmit.target.rekognizeName.value}%%${eventSubmit.target.rekognizeEmail.value}`);
         this.setState({ showRekognizeForm: false });
       } else {
         navigator.notification.alert('Error!\nemail are required', null, 'Room Manager', 'OK');
@@ -87,7 +87,7 @@ class Settings extends Component {
           <div className="rekognize-section">
             <label className="Settings-title">Rekognize:</label>
             <button className="btn-rekognize" onClick={this.onBtnAddUserClickHandler}>Add User</button>
-            <button className="btn-rekognize" onClick={this.props.resetGallery}>Reset users</button>
+            <button className="btn-rekognize" onClick={this.props.clearGallery}>Reset users</button>
           </div>
           <RekognizeForm
             show={this.state.showRekognizeForm}
@@ -99,8 +99,9 @@ class Settings extends Component {
     );
   }
 }
-const mapDispatchToProps = dispatch => ({
-  insertToGallery: (img, name) => dispatch(insertPhotoToGallery(img, name)),
-  resetGallery: () => dispatch(clearGallery()),
-});
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  insertPhotoToGallery,
+  clearGallery,
+}, dispatch);
 export default connect(null, mapDispatchToProps)(Settings);

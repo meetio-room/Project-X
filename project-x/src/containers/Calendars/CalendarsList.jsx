@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import CalendarItem from '../../components/CalendarItem/CalendarItem';
 import { createCalendar, loadEvents, selectCalendar } from '../../store/actions/calendar';
 import './CalendarList.css';
@@ -7,12 +8,14 @@ import './CalendarList.css';
 class CalendarList extends Component {
   constructor(props) {
     super(props);
+    this.onAddCalendarClickHandler = this.onAddCalendarClickHandler.bind(this);
+    this.onCalendarItemClickHandler = this.onCalendarItemClickHandler.bind(this);
     this.state = {
       showCreateCalendarInput: false,
     };
   }
 
-  onAddCalendarClickHandler = () => {
+  onAddCalendarClickHandler() {
     if (this.state.showCreateCalendarInput) {
       const name = this.newCalendarInput.value.trim() || '';
       const nameIndex = this.props.calendars.findIndex(el => el.name === name);
@@ -29,9 +32,9 @@ class CalendarList extends Component {
     }));
   }
 
-  onCalendarItemClickHandler = (id) => {
+  onCalendarItemClickHandler(id) {
     this.props.selectCalendar(id);
-    this.props.loadCalendarEvents(id, this.props.token);
+    this.props.loadEvents(id, this.props.token);
     this.props.clicked(false);
   }
   render() {
@@ -74,9 +77,10 @@ const mapStateToProps = state => ({
   token: state.calendar.access_token,
 });
 
-const mapDispatchToProps = dispatch => ({
-  createCalendar: (name, token) => dispatch(createCalendar(name, token)),
-  loadCalendarEvents: (calendarId, token) => dispatch(loadEvents(calendarId, token)),
-  selectCalendar: calendarId => dispatch(selectCalendar(calendarId)),
-});
+const mapDispatchToProps = dispatch => bindActionCreators({
+  createCalendar,
+  loadEvents,
+  selectCalendar,
+}, dispatch);
+
 export default connect(mapStateToProps, mapDispatchToProps)(CalendarList);

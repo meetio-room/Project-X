@@ -124,7 +124,7 @@ class Device {
   });
 
   static showAlert(message) {
-    navigator.notification.alert(message, null, 'Room Manager', 'OK');
+    navigator.notification.alert(message, null, config.PROGRAM_NAME, 'OK');
   }
 
   // Events

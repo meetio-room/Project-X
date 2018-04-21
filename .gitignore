@@ -1,10 +1,14 @@
 .vscode/*
+hooks/*
 node_modules/*
 platforms/*
 plugins/*
+typings/*
 
 project-x/build/*
 project-x/node_modules/*
+project-x/scripts/*
+project-x/config/*
 
 www/*
 project-x/.env
