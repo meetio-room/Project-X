@@ -2,6 +2,7 @@ import axios from 'axios';
 import moment from 'moment';
 import Device from '../../device';
 import store from '../store';
+import * as config from './../../config';
 
 /**
 *  Select current calendar by id
@@ -101,7 +102,7 @@ const saveUsersTOStoreFromDB = users => ({
 
 const loadCalendarsFromGoogle = accessToken => (dispatch) => {
   dispatch(showSpinner(true));
-  axios.get(`https://www.googleapis.com/calendar/v3/users/me/calendarList?access_token=${accessToken}`)
+  axios.get(`${config.GOOGLE_CALENDAR_URL}/users/me/calendarList?access_token=${accessToken}`)
     .then((res) => {
       const result = res.data.items;
       const calendars = [];
@@ -226,7 +227,7 @@ export const loadCurrentEvent = event => (dispatch) => {
 export const loadEvents = (calendarId, accessToken) => (dispatch) => {
   const curTime = encodeURIComponent(moment().format());
   const maxTime = encodeURIComponent(moment().add(14, 'days').format());
-  axios.get(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?access_token=${accessToken}&singleEvents=true&timeMin=${curTime}&timeMax=${maxTime}`)
+  axios.get(`${config.GOOGLE_CALENDAR_URL}/calendars/${calendarId}/events?access_token=${accessToken}&singleEvents=true&timeMin=${curTime}&timeMax=${maxTime}`)
     .then((res) => { // get events from google
       const result = res.data;
       const calendarEvents = [];
@@ -289,7 +290,7 @@ export const createCalendar = (calendarName, accessToken) => {
     },
   };
   return (dispatch) => {
-    axios.post('https://www.googleapis.com/calendar/v3/calendars', data, headers)
+    axios.post(`${config.GOOGLE_CALENDAR_URL}/calendars`, data, headers)
       .then((res) => {
         dispatch(saveCalendar({
           id: res.data.id,
@@ -329,7 +330,7 @@ export const createEvent = (event, calendarId, accessToken) => { // should add a
     },
   };
   return (dispatch) => {
-    axios.post(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events`, data, headers)
+    axios.post(`${config.GOOGLE_CALENDAR_URL}/calendars/${calendarId}/events`, data, headers)
       .then((res) => {
         const newEvent = {
           id: res.data.id,
