@@ -4,6 +4,7 @@ node_modules/*
 platforms/*
 plugins/*
 typings/*
+package-lock.json
 
 project-x/build/*
 project-x/node_modules/*
