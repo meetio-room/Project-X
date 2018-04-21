@@ -3,6 +3,8 @@ import moment from 'moment';
 import Device from '../../device';
 import store from '../store';
 import * as config from './../../config';
+import { showSpinner } from './UI';
+import { refreshToken } from './auth';
 
 /**
 *  Select current calendar by id
@@ -10,10 +12,6 @@ import * as config from './../../config';
 */
 export const selectCalendar = id => ({
   type: 'SELECT_CALENDAR',
-  payload: id,
-});
-const deleteEventFromStore = id => ({
-  type: 'DELETE_EVENT',
   payload: id,
 });
 
@@ -26,56 +24,6 @@ const createCalendarsList = calendarsId => ({
   payload: calendarsId,
 });
 
-/**
-* Save new token
-* @param {string} token -- new Token
-* @param {string} TTL - Time to live new token in seconds
-*/
-const saveToken = (token, TTL) => ({
-  type: 'REFRESH_TOKEN',
-  payload: token,
-  TTL,
-});
-
-const setAvailableRoom = timeToEvent => ({
-  type: 'SET_AVAILABLE_ROOM',
-  payload: {
-    status: 'Available',
-    timeStart: '',
-    eventName: '',
-    timeEnd: '',
-    BtnName: 'Quick book for now!',
-    timeToNextEvent: timeToEvent,
-  },
-});
-
-const setReservedRoom = timeToEvent => ({
-  type: 'SET_RESERVED_ROOM',
-  payload: {
-    status: 'Reserved',
-    timeStart: '',
-    BtnName: 'Quick check-in',
-    eventName: '',
-    timeEnd: '',
-    timeToNextEvent: timeToEvent,
-  },
-});
-
-const setBusyRoom = (event, timeStart, timeEnd) => ({
-  type: 'SET_BUSY_ROOM',
-  payload: {
-    status: 'Busy',
-    eventName: event.name,
-    timeStart,
-    timeEnd,
-    BtnName: 'View',
-  },
-});
-
-const showSpinner = show => ({
-  type: 'SHOW_SPINNER',
-  payload: show,
-});
 const saveCalendarEvents = events => ({
   type: 'LOAD_CALENDAR_EVENTS',
   payload: events,
@@ -90,17 +38,7 @@ const saveEvent = event => ({
   payload: event,
 });
 
-const errorHandler = error => ({
-  type: 'ERROR_HANDLER',
-  payload: error,
-});
-
-const saveUsersTOStoreFromDB = users => ({
-  type: 'SAVE_USERS_ID',
-  payload: users,
-});
-
-const loadCalendarsFromGoogle = accessToken => (dispatch) => {
+export const loadCalendarsFromGoogle = accessToken => (dispatch) => {
   dispatch(showSpinner(true));
   axios.get(`${config.GOOGLE_CALENDAR_URL}/users/me/calendarList?access_token=${accessToken}`)
     .then((res) => {
@@ -115,107 +53,8 @@ const loadCalendarsFromGoogle = accessToken => (dispatch) => {
       dispatch(createCalendarsList(calendars));
     }).catch(() => {
       dispatch(showSpinner(false));
-      dispatch(errorHandler('Something went wrong!\nPlease re-run the program!'));
+      Device.showAlert('Something went wrong!\nPlease re-run the program!');
     });
-};
-
-export const saveUserToDB = (userID, email) => {
-  axios.post('https://roommanager-44c77.firebaseio.com/users.json', {
-    email,
-    userID,
-  });
-};
-export const readUsersFromDb = () => (dispatch) => {
-  axios.get('https://roommanager-44c77.firebaseio.com/users.json')
-    .then((response) => {
-      const users = [];
-      for (const key in response.data) {
-        const user = response.data[key];
-        users.push(user);
-      }
-      dispatch(saveUsersTOStoreFromDB(users));
-    });
-};
-
-export const refreshToken = serverCode => (dispatch) => {
-  let data = '';
-  if (serverCode) {
-    data = `client_id=${process.env.REACT_APP_GOOGLE_CLIENT_ID
-    }&client_secret=${process.env.REACT_APP_GOOGLE_CLIENT_SECRET
-    }&grant_type=authorization_code` +
-      `&code=${serverCode}`;
-  } else if (localStorage.getItem('refreshToken')) {
-    data = `client_id=${process.env.REACT_APP_GOOGLE_CLIENT_ID
-    }&client_secret=${process.env.REACT_APP_GOOGLE_CLIENT_SECRET
-    }&grant_type=refresh_token` +
-      `&refresh_token=${localStorage.getItem('refreshToken')}`;
-  }
-  const headers = {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-    },
-  };
-
-  axios.post('https://www.googleapis.com/oauth2/v4/token', data, headers)
-    .then((res) => {
-      if (res.data.refresh_token) {
-        localStorage.setItem('refreshToken', res.data.refresh_token);
-      }
-      dispatch(saveToken(res.data.access_token, res.data.expires_in));
-    });
-};
-
-export const login = () => (dispatch) => {
-  if (navigator.connection.type === window.Connection.NONE) {
-    setTimeout(() => {
-      Device.showToast('Please enable network!');
-      dispatch(login());
-    }, 1500);
-  } else {
-    window.plugins.googleplus.login(
-      {
-        scopes: 'profile email https://www.googleapis.com/auth/calendar https://www.google.com/calendar/feeds',
-        webClientId: process.env.REACT_APP_GOOGLE_CLIENT_ID,
-        offline: true,
-      },
-      (obj) => {
-        dispatch(loadCalendarsFromGoogle(obj.accessToken));
-        dispatch(refreshToken(obj.serverAuthCode));
-        dispatch(readUsersFromDb());
-      },
-      () => {
-        dispatch(login());
-      },
-    );
-  }
-};
-
-/**
- * Load current event from store and update room status
- * @param { object } event first event from list
- * @returns { action } dispatch action
- */
-export const loadCurrentEvent = event => (dispatch) => {
-  const currentTime = new Date().valueOf();
-  if (!event) {
-    dispatch(setAvailableRoom(' - '));
-  } else if (Date.parse(event.end) < currentTime) {
-    dispatch(deleteEventFromStore(event.id));
-  } else {
-    const timeToEvent = Date.parse(event.start) - currentTime;
-
-    if (Date.parse(event.start) > currentTime) {
-      if (timeToEvent > 15 * 60 * 1000) {
-        dispatch(setAvailableRoom(timeToEvent));
-      } else {
-        dispatch(setReservedRoom(timeToEvent));
-      }
-    } else {
-      const timeStart = Date.parse(event.start);
-      const timeEnd = Date.parse(event.end);
-      dispatch(setBusyRoom(event, timeStart, timeEnd));
-    }
-  }
 };
 
 /**
@@ -297,7 +136,7 @@ export const createCalendar = (calendarName, accessToken) => {
           name: res.data.summary,
         }));
       })
-      .catch(() => dispatch(errorHandler('Please enable network connection!')));
+      .catch(() => Device.showAlert('Please enable network connection!'));
   };
 };
 
@@ -342,6 +181,6 @@ export const createEvent = (event, calendarId, accessToken) => { // should add a
         Device.showToast('Event added!');
         dispatch(saveEvent(newEvent));
       })
-      .catch(() => dispatch(errorHandler('Event doesn`t created\nPlease re-run the program!')));
+      .catch(() => Device.showAlert('Event doesn`t created\nPlease re-run the program!'));
   };
 };

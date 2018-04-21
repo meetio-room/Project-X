@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import CalendarList from '../containers/Calendars/CalendarsList';
-import { login } from '../store/actions/calendar';
+import { login } from '../store/actions/auth';
 import RoomManager from '../containers/RoomManager/RoomManager';
 import Spinner from '../components/UI/Spinner/Spinner';
 

@@ -4,7 +4,9 @@ import { connect } from 'react-redux';
 import RoomStatus from '../../components/RoomStatusWidget/RoomStatus';
 import EventBuilder from '../EventBuilder/EventBuilder';
 import Setting from '../Settings/Settings';
-import { loadEvents, loadCurrentEvent, refreshToken } from '../../store/actions/calendar';
+import { loadEvents } from '../../store/actions/calendar';
+import { loadCurrentEvent } from '../../store/actions/UI';
+import { refreshToken } from '../../store/actions/auth';
 import Device from '../../device';
 import * as config from '../../config';
 
