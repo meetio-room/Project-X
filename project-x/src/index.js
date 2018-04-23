@@ -14,6 +14,7 @@ const startApp = () => {
     <App />
   </Provider>, document.getElementById('root'));
   Device.fulscreenMode();
+  document.addEventListener('backbutton', e => e.preventDefault(), false);
   window.cordova.plugins.backgroundMode.enable();
 };
 

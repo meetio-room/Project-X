@@ -45,5 +45,6 @@
     <plugin name="cordova-plugin-brightness" spec="^0.2.0" />
     <plugin name="cordova-plugin-screen-locker" spec="^0.2.2" />
     <plugin name="cordova-plugin-camera" spec="^4.0.2" />
+    <plugin name="cordova-plugin-kiosk" spec="https://github.com/hkalina/cordova-plugin-kiosk.git" />
     <engine name="android" spec="^7.0.0" />
 </widget>

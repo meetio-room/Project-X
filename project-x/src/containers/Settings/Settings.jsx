@@ -14,7 +14,7 @@ class Settings extends Component {
     super(props);
     this.state = {
       showRekognizeForm: false,
-      saveModeEnable: JSON.parse(localStorage.getItem('saveModeON')),
+      isSaveModeEnable: JSON.parse(localStorage.getItem('saveModeON')),
     };
   }
   onRefreshBtnClickHandler = () => {
@@ -46,13 +46,12 @@ class Settings extends Component {
     eventSubmit.stopPropagation();
   }
 
-  updateCheck = () => {
-    alert(1);
+  updateCheck() {
     this.setState((oldState) => {
-      Device.saveModeEnable = !oldState.saveModeEnable;
-      localStorage.setItem('saveModeON', !oldState.saveModeEnable);
+      Device.isSaveModeEnable = !oldState.isSaveModeEnable;
+      localStorage.setItem('saveModeON', !oldState.isSaveModeEnable);
       return {
-        saveModeEnable: !oldState.saveModeEnable,
+        isSaveModeEnable: !oldState.isSaveModeEnable,
       };
     });
   }
@@ -67,11 +66,12 @@ class Settings extends Component {
           <div className="version">{`version: ${config.VERSION}`}</div>
           <hr />
           <SwitchComponent
-            active={this.state.saveModeEnable}
+            active={this.state.isSaveModeEnable}
             message="Save mode"
             updateCheck={() => this.updateCheck()}
             id="1"
           />
+          <button onClick={() => window.KioskPlugin.exitKiosk()} className="btn-rekognize">Exit</button>
           <p>Erase all data && Refresh</p>
           <button className="btn-refresh" style={{ backgroundImage: `url(${refreshBg})` }} onClick={this.onRefreshBtnClickHandler}>Reset</button>
           <div className="rekognize-section">
