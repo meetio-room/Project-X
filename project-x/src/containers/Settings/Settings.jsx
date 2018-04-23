@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import RekognizeForm from '../../components/RekognizeRegistry/RekognizeRegistry';
+import SwitchComponent from '../../components/UI/Switch/SwitchComponent';
 import './Settings.css';
 import { insertPhotoToGallery, clearGallery } from '../../store/actions/rekognize';
 import refreshBg from '../../images/refresh.png';
@@ -46,6 +47,7 @@ class Settings extends Component {
   }
 
   updateCheck = () => {
+    alert(1);
     this.setState((oldState) => {
       Device.saveModeEnable = !oldState.saveModeEnable;
       localStorage.setItem('saveModeON', !oldState.saveModeEnable);
@@ -64,24 +66,12 @@ class Settings extends Component {
           <h2>{config.PROGRAM_NAME}</h2>
           <div className="version">{`version: ${config.VERSION}`}</div>
           <hr />
-          <div>
-            <label className="switch">
-              { this.state.saveModeEnable ? <input type="checkbox" id="saveModeCheck" onChange={this.updateCheck} checked />
-              : <input type="checkbox" id="saveModeCheck" onChange={this.updateCheck} />
-            }
-              <span className="slider round" />
-            </label>
-            <label
-              htmlFor="saveModeCheck"
-              style={{
-              position: 'relative',
-              top: '-10px',
-              left: '5px',
-              'font-size': '20px',
-            }}
-            >{`Save mode ${this.state.saveModeEnable ? 'enabled' : 'disabled'}`}
-            </label>
-          </div>
+          <SwitchComponent
+            active={this.state.saveModeEnable}
+            message="Save mode"
+            updateCheck={() => this.updateCheck()}
+            id="1"
+          />
           <p>Erase all data && Refresh</p>
           <button className="btn-refresh" style={{ backgroundImage: `url(${refreshBg})` }} onClick={this.onRefreshBtnClickHandler}>Reset</button>
           <div className="rekognize-section">
