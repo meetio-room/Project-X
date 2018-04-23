@@ -1,3 +1,5 @@
+import { loadEvents } from './calendar';
+
 const setAvailableRoom = timeToEvent => ({
   type: 'SET_AVAILABLE_ROOM',
   payload: {
@@ -54,6 +56,7 @@ export const loadCurrentEvent = event => (dispatch) => {
     dispatch(setAvailableRoom(' - '));
   } else if (Date.parse(event.end) < currentTime) {
     dispatch(deleteEventFromStore(event.id));
+    dispatch(loadEvents(localStorage.getItem('accessToken'), localStorage.getItem('calendarId')));
   } else {
     const timeToEvent = Date.parse(event.start) - currentTime;
 

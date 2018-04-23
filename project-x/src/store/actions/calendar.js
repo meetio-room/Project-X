@@ -151,7 +151,8 @@ export const createCalendar = (calendarName, accessToken) => {
   *  @param {string} calendarId - google calendar id
   *  @param {string} access_token - user token for google api
   */
-export const createEvent = (event, calendarId, accessToken) => { // should add attendees
+export const createEvent = (event, calendarId, accessToken, creator) => { // should add attendees
+  creator = 'dmytroroik@gmail.com';
   const data = {
     start: {
       dateTime: event.start.format(),
@@ -161,8 +162,15 @@ export const createEvent = (event, calendarId, accessToken) => { // should add a
       dateTime: event.end.format(),
       timeZone: 'Europe/Kiev',
     },
-    summary: event.summary || '',
+    attendees: [],
+    summary: event.summary || 'Event',
   };
+  if (creator) {
+    data.attendees.push({
+      email: creator,
+      responseStatus: 'accepted',
+    });
+  }
   const headers = {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -176,7 +184,7 @@ export const createEvent = (event, calendarId, accessToken) => { // should add a
           name: res.data.summary,
           start: res.data.start.dateTime,
           end: res.data.end.dateTime,
-          attendees: [],
+          attendees: [...res.data.attendees],
         };
         Device.showToast('Event added!');
         dispatch(saveEvent(newEvent));

@@ -117,6 +117,29 @@ export default function calendar(state = initialState, action) {
     }
     case 'LOAD_CALENDAR_EVENTS':
     {
+      const events = [...action.payload];
+      let isEventsPresent,
+        isAttendeesPresent;
+      if (state.currentCalendarEvents.length !== events.length) {
+        isEventsPresent = false;
+      } else {
+        isEventsPresent = events.every((e, index) => e.id === state.currentCalendarEvents[index].id);
+      }
+      if (events[0].attendees.length > 0
+          && (state.currentCalendarEvents[0] && state.currentCalendarEvents[0].attendees && state.currentCalendarEvents[0].attendees.length > 0)) {
+        isAttendeesPresent = events[0].attendees.every((attendee, index) => {
+          const storeAttendee = state.currentCalendarEvents[0].attendees[index];
+          if (!storeAttendee) {
+            return false;
+          }
+          return storeAttendee.email === attendee.email && storeAttendee.img;
+        });
+      } else {
+        isAttendeesPresent = false;
+      }
+      if (isEventsPresent && isAttendeesPresent) {
+        return state;
+      }
       localStorage.setItem('events', JSON.stringify(action.payload));
       return {
         ...state,
