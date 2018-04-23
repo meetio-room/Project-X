@@ -1,6 +1,7 @@
 import axios from 'axios';
+import Device from '../../device';
 
-export const insertPhotoToGallery = (imageSrc, username) => (dispatch) => {
+export const insertPhotoToGallery = (imageSrc, username) => () => {
   axios.post('https://api.kairos.com/enroll', {
     gallery_name: 'newRoomManagerGallery',
     image: imageSrc,
@@ -10,14 +11,12 @@ export const insertPhotoToGallery = (imageSrc, username) => (dispatch) => {
       app_id: process.env.REACT_APP_KAIRO_APP_ID,
       app_key: process.env.REACT_APP_KAIRO_KEY,
     },
-  }).then((response) => {
-    alert(JSON.stringify(response));
-    // this.props.registerUser(response.data);
-  })
-    .catch(err => alert(err));
+  }).then(() => {
+    Device.showToast('user added!');
+  });
 };
 
-export const clearGallery = () => (dispatch) => {
+export const clearGallery = () => () => {
   axios.post('https://api.kairos.com/gallery/remove', {
     gallery_name: 'newRoomManagerGallery',
   }, {
@@ -25,12 +24,12 @@ export const clearGallery = () => (dispatch) => {
       app_id: process.env.REACT_APP_KAIRO_APP_ID,
       app_key: process.env.REACT_APP_KAIRO_KEY,
     },
-  }).then((response) => {
-    alert('Gallery has been reset. Feel free to register now');
+  }).then(() => {
+    Device.showAlert('Gallery has been reset.\nFeel free to register now');
   });
 };
 
-export const comparePhoto = imageSrc => dispatch => axios.post(
+export const comparePhoto = imageSrc => () => axios.post(
   'https://api.kairos.com/recognize',
   {
     gallery_name: 'newRoomManagerGallery',
@@ -41,6 +40,4 @@ export const comparePhoto = imageSrc => dispatch => axios.post(
       app_key: process.env.REACT_APP_KAIRO_KEY,
     },
   },
-).then((response) => {
-  return response.data.images[0].candidates[0].subject_id;
-});
+).then(response => response.data.images[0].candidates[0].subject_id);
