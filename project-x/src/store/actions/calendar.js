@@ -33,10 +33,6 @@ const saveCalendar = calendar => ({
   type: 'SAVE_CALENDAR',
   payload: calendar,
 });
-const saveEvent = event => ({
-  type: 'SAVE_EVENT',
-  payload: event,
-});
 
 export const loadCalendarsFromGoogle = accessToken => (dispatch) => {
   dispatch(showSpinner(true));
@@ -151,8 +147,7 @@ export const createCalendar = (calendarName, accessToken) => {
   *  @param {string} calendarId - google calendar id
   *  @param {string} access_token - user token for google api
   */
-export const createEvent = (event, calendarId, accessToken, creator) => { // should add attendees
-  creator = 'dmytroroik@gmail.com';
+export const createEvent = (event, calendarId, accessToken) => { // should add attendees
   const data = {
     start: {
       dateTime: event.start.format(),
@@ -165,9 +160,9 @@ export const createEvent = (event, calendarId, accessToken, creator) => { // sho
     attendees: [],
     summary: event.summary || 'Event',
   };
-  if (creator) {
+  if (event.creator) {
     data.attendees.push({
-      email: creator,
+      email: event.creator,
       responseStatus: 'accepted',
     });
   }
@@ -178,16 +173,9 @@ export const createEvent = (event, calendarId, accessToken, creator) => { // sho
   };
   return (dispatch) => {
     axios.post(`${config.GOOGLE_CALENDAR_URL}/calendars/${calendarId}/events`, data, headers)
-      .then((res) => {
-        const newEvent = {
-          id: res.data.id,
-          name: res.data.summary,
-          start: res.data.start.dateTime,
-          end: res.data.end.dateTime,
-          attendees: [...res.data.attendees],
-        };
+      .then(() => {
         Device.showToast('Event added!');
-        dispatch(saveEvent(newEvent));
+        dispatch(loadEvents(calendarId, accessToken));
       })
       .catch(() => Device.showAlert('Event doesn`t created\nPlease re-run the program!'));
   };

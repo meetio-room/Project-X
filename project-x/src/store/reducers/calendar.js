@@ -80,22 +80,6 @@ export default function calendar(state = initialState, action) {
         loading: action.payload,
       };
     }
-    case 'SAVE_EVENT':
-    {
-      const events = [...state.currentCalendarEvents];
-      const eventDate = Date.parse(action.payload.end);
-      const index = events.findIndex(e => eventDate < Date.parse(e.end));
-
-      if (index !== -1) {
-        events.splice(index, 0, { ...action.payload });
-      } else {
-        events.push({ ...action.payload });
-      }
-      return {
-        ...state,
-        currentCalendarEvents: events,
-      };
-    }
     case 'DELETE_EVENT':
     {
       const events = [...state.currentCalendarEvents];
@@ -118,8 +102,8 @@ export default function calendar(state = initialState, action) {
     case 'LOAD_CALENDAR_EVENTS':
     {
       const events = [...action.payload];
-      let isEventsPresent,
-        isAttendeesPresent;
+      let isEventsPresent;
+      let isAttendeesPresent;
       if (state.currentCalendarEvents.length !== events.length) {
         isEventsPresent = false;
       } else {

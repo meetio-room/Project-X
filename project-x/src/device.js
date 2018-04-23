@@ -1,4 +1,3 @@
-/* global window localStorage navigator  */
 import * as config from './config';
 
 class Device {

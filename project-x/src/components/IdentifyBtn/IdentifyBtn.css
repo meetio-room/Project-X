@@ -1,0 +1,19 @@
+.IdentifyBtn{
+  color:white;
+  font-size: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.btn-cancel{
+ color: red;
+ padding: 10px;
+ font-size: 30px;
+ background: transparent;
+ border:none;
+}
+.Identify-content{
+  display: flex;
+  justify-content: center;
+}

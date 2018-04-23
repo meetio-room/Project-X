@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import CameraIcon from 'react-icons/lib/fa/camera';
 import moment from 'moment';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -8,6 +7,7 @@ import EventNames from '../../components/EventConstructor/EventName/EventNames';
 import EventStarts from '../../components/EventConstructor/EventTimeStart/EventStarts';
 import EventDuration from '../../components/EventConstructor/EventDuration/EventDuration';
 import ConflictEvents from '../../components/EventConstructor/ConflictEvents/ConflictEvents';
+import IdentifyBtn from '../../components/IdentifyBtn/IdentifyBtn';
 import { createEvent } from '../../store/actions/calendar';
 import { comparePhoto } from '../../store/actions/rekognize';
 import { getConflictEvents } from '../../service/util';
@@ -28,6 +28,7 @@ class EventBuilder extends Component {
     this.closeEventBuilder = this.closeEventBuilder.bind(this);
     this.identificateUser = this.identificateUser.bind(this);
     this.checkEventErrors = this.checkEventErrors.bind(this);
+    this.onClearCreator = this.onClearCreator.bind(this);
 
     this.deltaHours = 60 - moment().minute();
     if (this.deltaHours > 30) this.deltaHours -= 30;
@@ -43,6 +44,7 @@ class EventBuilder extends Component {
       customNameShow: false,
       customEvStart: false,
       customEvDuration: false,
+      eventCreator: '',
     };
     this.newEvent = {};
     this.timer = null;
@@ -192,10 +194,22 @@ class EventBuilder extends Component {
     this.newEvent.summary = e.target.value;
   }
 
+  onClearCreator() {
+    this.newEvent.creator = '';
+    this.setState({
+      eventCreator: '',
+    });
+  }
+
   identificateUser() {
     Device.createPhoto().then((img) => {
       Device.showToast('compared...');
-      this.props.comparePhoto(img);
+      const that = this;
+      this.props.comparePhoto(img)
+        .then((email) => {
+          [, that.newEvent.creator] = email.split('%%');
+          that.setState({ eventCreator: that.newEvent.creator });
+        });
     });
   }
 
@@ -204,11 +218,8 @@ class EventBuilder extends Component {
     if (this.newEvent.start && this.newEvent.end) { // validation
       if (this.newEvent.start - this.newEvent.end >= 0) {
         errors.eventEnd = 'The event has start faster than the end!';
-      } else {
-        errors.eventEnd = null;
       }
-      const conflictEvents = getConflictEvents(this.props.events, this.newEvent);
-      errors.conflictEvents = conflictEvents;
+      errors.conflictEvents = getConflictEvents(this.props.events, this.newEvent);
       this.setState({ errors });
     }
   }
@@ -222,6 +233,7 @@ class EventBuilder extends Component {
       customEvStart: false,
       customEvDuration: false,
       errors: {},
+      eventCreator: '',
     });
     this.newEvent = {};
     this.props.hideEventBuilder();
@@ -266,7 +278,12 @@ class EventBuilder extends Component {
           customClick={this.onCustomEvDurationItemClickHandler}
           showCustom={this.state.customEvDuration}
         />
-        <button className="btn-confirm" onClick={this.identificateUser}><CameraIcon /> Identify</button>
+        <IdentifyBtn
+          clicked={this.identificateUser}
+          canceled={this.onClearCreator}
+          message={this.newEvent.creator}
+          active={this.state.eventCreator}
+        />
         <button className="btn-confirm" onClick={this.onConfirmClickHandler}>Confirm</button>
       </div>
     );

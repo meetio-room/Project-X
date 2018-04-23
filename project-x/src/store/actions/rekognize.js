@@ -30,8 +30,9 @@ export const clearGallery = () => (dispatch) => {
   });
 };
 
-export const comparePhoto = imageSrc => (dispatch) => {
-  axios.post('https://api.kairos.com/recognize', {
+export const comparePhoto = imageSrc => dispatch => axios.post(
+  'https://api.kairos.com/recognize',
+  {
     gallery_name: 'newRoomManagerGallery',
     image: imageSrc,
   }, {
@@ -39,7 +40,7 @@ export const comparePhoto = imageSrc => (dispatch) => {
       app_id: process.env.REACT_APP_KAIRO_APP_ID,
       app_key: process.env.REACT_APP_KAIRO_KEY,
     },
-  }).then((response) => {
-    alert(JSON.stringify(response.data.images[0].candidates[0].subject_id));
-  });
-};
+  },
+).then((response) => {
+  return response.data.images[0].candidates[0].subject_id;
+});
