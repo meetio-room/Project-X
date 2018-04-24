@@ -76,7 +76,11 @@ class RoomManager extends Component {
     window.event.stopPropagation();
     Device.setMode('MIDDLE_MODE');
     Device.quinaryClick(() => {
-      this.setState({ isSettingsShow: true });
+      Device.showPrompt('Enter Password:', (result) => {
+        if (result.input1 === process.env.REACT_APP_SETTINGS_PASSWORD) {
+          this.setState({ isSettingsShow: true });
+        }
+      });
     });
   }
 

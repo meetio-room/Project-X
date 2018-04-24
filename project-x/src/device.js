@@ -34,6 +34,15 @@ class Device {
     });
   }
 
+  static showPrompt(message, onSuccess) {
+    navigator.notification.prompt(
+      message, // message
+      onSuccess,
+      config.PROGRAM_NAME,
+      ['Ok', 'Exit'],
+    );
+  }
+
   /**
   * set Brightness for screen
   * @param {float} value brightness of screen [0.0,... 1]
