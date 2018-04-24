@@ -70,18 +70,21 @@ class EventBuilder extends Component {
   onChangeDateTimeHandler(id, dateTime) {
     const errors = { ...this.state.errors };
     if (id === 'event-start') {
-      if (dateTime < moment() - (2 * 60 * 1000)) {
+      if (dateTime < moment()) {
         errors.eventStart = 'Error!\n Event start in the past';
       } else {
         errors.eventStart = null;
-        this.newEvent.start = dateTime - (dateTime.second() * 1000);
+        this.newEvent.start = dateTime; // - (dateTime.second() * 1000);
+        if (this.state.activeEvDuration && this.state.activeEvDuration !== 'custom') {
+          this.newEvent.end = moment(this.newEvent.start).add(this.state.activeEvDuration, 'minutes');
+        }
       }
       this.setState({ errors });
     } else if (id === 'event-end') {
-      this.newEvent.end = dateTime;
+      this.newEvent.end = dateTime - (dateTime.second() * 1000);
       if (!this.newEvent.start) {
         this.newEvent.start = moment();
-        this.newEvent.start -= this.newEvent.second() * 1000;
+        this.newEvent.start -= this.newEvent.start.second() * 1000;
         this.setState({
           activeEvStart: 'now',
           activeEvStartId: 0,

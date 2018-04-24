@@ -36,8 +36,6 @@ class Settings extends Component {
 
   onRekognizeSubmit = () => {
     const eventSubmit = window.event;
-    alert(eventSubmit.target.rekognizeEmail.value);
-    alert(`${eventSubmit.target.rekognizeUserID.value}%%${eventSubmit.target.rekognizeEmail.value}`);
     Device.createPhoto().then((img) => {
       if (eventSubmit.target.rekognizeEmail.value) {
         this.props.insertPhotoToGallery(img, `${eventSubmit.target.rekognizeUserID.value}%%${eventSubmit.target.rekognizeEmail.value}`);
