@@ -5,6 +5,7 @@ import RekognizeForm from '../../components/RekognizeRegistry/RekognizeRegistry'
 import SwitchComponent from '../../components/UI/Switch/SwitchComponent';
 import './Settings.css';
 import { insertPhotoToGallery, clearGallery } from '../../store/actions/rekognize';
+import { saveUserToDB } from '../../store/actions/firebase';
 import refreshBg from '../../images/refresh.png';
 import Device from '../../device';
 import * as config from '../../config';
@@ -15,6 +16,7 @@ class Settings extends Component {
     this.state = {
       showRekognizeForm: false,
       isSaveModeEnable: JSON.parse(localStorage.getItem('saveModeON')),
+      activePeopleIndex: -1,
     };
   }
   onRefreshBtnClickHandler = () => {
@@ -34,16 +36,30 @@ class Settings extends Component {
 
   onRekognizeSubmit = () => {
     const eventSubmit = window.event;
+    alert(eventSubmit.target.rekognizeEmail.value);
+    alert(`${eventSubmit.target.rekognizeUserID.value}%%${eventSubmit.target.rekognizeEmail.value}`);
     Device.createPhoto().then((img) => {
       if (eventSubmit.target.rekognizeEmail.value) {
-        this.props.insertPhotoToGallery(img, `${eventSubmit.target.rekognizeName.value}%%${eventSubmit.target.rekognizeEmail.value}`);
+        this.props.insertPhotoToGallery(img, `${eventSubmit.target.rekognizeUserID.value}%%${eventSubmit.target.rekognizeEmail.value}`);
         this.setState({ showRekognizeForm: false });
+        this.props.saveUserToDB(eventSubmit.target.rekognizeUserID.value, eventSubmit.target.rekognizeEmail.value);
       } else {
         navigator.notification.alert('Error!\nemail are required', null, 'Room Manager', 'OK');
       }
     });
     eventSubmit.preventDefault();
     eventSubmit.stopPropagation();
+  }
+  onChangeUserEmail = () => {
+    for (let i = 0; i < window.event.target.list.options.length; i += 1) {
+      if (window.event.target.list.options[i].value === window.event.target.value) {
+        this.setState({ activePeopleIndex: i });
+        break;
+      }
+      if (i === window.event.target.list.options.length - 1) {
+        this.setState({ activePeopleIndex: -1 });
+      }
+    }
   }
 
   updateCheck() {
@@ -80,18 +96,31 @@ class Settings extends Component {
             <button className="btn-rekognize" onClick={this.props.clearGallery}>Reset users</button>
           </div>
           <RekognizeForm
+            arrayData={this.props.people}
+            activePeopleIndex={this.state.activePeopleIndex}
+            changeEmail={this.onChangeUserEmail}
             show={this.state.showRekognizeForm}
             onAdd={this.onRekognizeSubmit}
           />
         </div>
-        <button className="btn-close" onClick={() => this.props.hideWindow()}>Close</button>
+        <button
+          className="btn-close"
+          onClick={() => { this.props.hideWindow(); this.setState({ showRekognizeForm: false }); }}
+        >
+          Close
+        </button>
       </div>
     );
   }
 }
 
+const mapStateToProps = state => ({
+  people: state.calendar.people,
+});
+
 const mapDispatchToProps = dispatch => bindActionCreators({
   insertPhotoToGallery,
   clearGallery,
+  saveUserToDB,
 }, dispatch);
-export default connect(null, mapDispatchToProps)(Settings);
+export default connect(mapStateToProps, mapDispatchToProps)(Settings);

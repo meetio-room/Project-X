@@ -73,7 +73,7 @@ class RoomManager extends Component {
   }
 
   onScreenClickHandler = () => {
-    event.stopPropagation();
+    window.event.stopPropagation();
     Device.setMode('MIDDLE_MODE');
     Device.quinaryClick(() => {
       this.setState({ isSettingsShow: true });

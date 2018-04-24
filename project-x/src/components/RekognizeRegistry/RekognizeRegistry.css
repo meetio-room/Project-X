@@ -1,7 +1,7 @@
 .RekognizeRegistry form{
   display: flex;
   flex-direction: column;
-  width: 280px;
+  width: 380px;
   border: 1px solid #BD9D9A;
   margin-top: 13px;
   padding: 0 10px 10px 10px;
