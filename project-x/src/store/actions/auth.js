@@ -45,6 +45,7 @@ export const login = () => (dispatch) => {
   if (navigator.connection.type === window.Connection.NONE) {
     setTimeout(() => {
       Device.showToast('Please enable network!');
+      Device.setMode('MIDDLE_MODE');
       dispatch(login());
     }, 1500);
   } else {

@@ -2,7 +2,7 @@ import * as config from './config';
 
 class Device {
   // public
-  static saveModeEnable = JSON.parse(localStorage.getItem('saveModeON'));
+  static isSaveModeEnable = JSON.parse(localStorage.getItem('saveModeON'));
   static currentDeviceMode = '';
 
   // private
@@ -82,8 +82,10 @@ class Device {
     if (mode === Device.currentDeviceMode) return;
     switch (mode) {
       case 'SLEEP_MODE': {
-        Device.setDeviceSleeping(true);
-        Device.currentDeviceMode = 'SLEEP_MODE';
+        if (Device.isSaveModeEnable) {
+          Device.setDeviceSleeping(true);
+          Device.currentDeviceMode = 'SLEEP_MODE';
+        }
         break;
       }
       case 'ACTIVE_MODE': {
