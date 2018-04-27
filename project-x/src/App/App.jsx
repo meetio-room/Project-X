@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import CalendarList from '../containers/Calendars/CalendarsList';
-import { login } from '../store/actions/auth';
+import { login, refreshToken } from '../store/actions/auth';
 import RoomManager from '../containers/RoomManager/RoomManager';
 import Spinner from '../components/UI/Spinner/Spinner';
 
@@ -15,7 +16,12 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.props.loadProfile();
+    if (localStorage.getItem('refreshToken')) {
+      this.props.refreshToken();
+    } else {
+      this.props.login();
+    }
+    this.props.refreshToken();
     if (this.props.calendarId) {
       this.setCalendarListVisibility(false);
     } else {
@@ -44,8 +50,9 @@ const mapStateToProps = state => ({
   isLoading: state.calendar.loading,
 });
 
-const mapDispatchToProp = dispatch => ({
-  loadProfile: () => dispatch(login()),
-});
+const mapDispatchToProps = dispatch => bindActionCreators({
+  login,
+  refreshToken,
+}, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProp)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
