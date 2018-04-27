@@ -4,21 +4,29 @@
   justify-content: center;
 }
 .EventDuration-item{
-  padding: 10px 0;
-  margin: 10px;
+  padding: 15px;
   font-size: 20px;
   font-weight: bold;
   border-radius: 15px;
   background: #ab1414;
+  color: white;
   border: none;
   text-transform: capitalize;
-  width: 130px;
-  text-align: center;
+  padding-left: 60px;
+  width: 170px;
+  margin: 1px;
+  background-size: 50px 50px;
+  background-repeat: no-repeat;
+  background-position: 21px 3px;
+  outline: none;
+  opacity: 0.5;
+}
+.EventDuration-item:last-child{
+  padding-left: 20px!important;
 }
 .EventDuration-item-active{
-  background: #0a0303!important;
-  color: white;
-  border: 5px solid red!important;
+  opacity: 1;
+  color: yellow;
 }
 input#event-start,
 input#event-end {

@@ -70,7 +70,7 @@
 .arrow{
   height: 10px;
   position: absolute;
-  top: 180px;
+  top: 320px;
   left: 62%;
   z-index: 0;
   font-size: 132px;
@@ -95,15 +95,16 @@
 
 .clock{
   color: white;
-  font-size: 80px;
+  font-size: 175px;
   text-align: center;
-  font-family: Garuda;
+  /* font-family: Garuda; */
   padding-bottom: 0;
   z-index: 1;
+  font-family: "Dejavu Sans";
+  margin-top: 45px;
 }
 
 .container{
-  width: 320px;
   margin: 0 auto;  
 }
 .container-Busy{
@@ -112,7 +113,7 @@
 
 .Attendees-section{
   display: block;
-  overflow: scroll;flow: scroll;
+  overflow: scroll;
 }
 
 .Attendees-list{
@@ -127,12 +128,14 @@
 
 .btn{
   color: black;
-  padding: 20px;
+  padding: 5px;
   background-color: rgb(13,149,5);
   font-size: 30px;
   max-width: 67%;
   border: 1px solid black;
   border-radius: 3px;
+  position: relative;
+  top: 40px;
 }
 .btn.btn-Busy{
   display: none;
@@ -168,8 +171,14 @@
     height: 100vh;
   }
   .arrow{
-    top: 220px;
-    left: 60%;
+    top: 370px;
+    left: 70%;
+  }
+  .Attendees-list{
+    max-height: 50vh;
+  }
+  .btn{
+    top: 90px;
   }
   
 }

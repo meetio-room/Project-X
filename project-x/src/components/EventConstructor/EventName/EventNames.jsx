@@ -6,10 +6,11 @@ const eventNames = props => (
     {
       props.names.map(name => (
         <button
-          key={name}
-          className={props.active !== name ? 'EventName-item' : 'EventName-item  EventName-item-active'}
-          onClick={() => props.itemClick(name)}
-        >{name}
+          key={name.name}
+          className={props.active !== name.name ? 'EventName-item' : 'EventName-item  EventName-item-active'}
+          onClick={() => props.itemClick(name.name)}
+          style={{ backgroundImage: `url(${name.icon})` }}
+        >{name.name}
         </button>))
     }
     <button

@@ -34,7 +34,16 @@ class EventBuilder extends Component {
     if (this.deltaHours > 30) this.deltaHours -= 30;
     this.state = {
       errors: {},
-      eventNames: ['call', 'conference'],
+      eventNames: [
+        {
+          name: 'call',
+          icon: 'https://image.flaticon.com/icons/svg/17/17819.svg',
+        },
+        {
+          name: 'conference',
+          icon: 'https://i.pinimg.com/originals/5e/52/af/5e52af2fa14f8242431ad74d8b0f11fe.png',
+        },
+      ],
       eventStarts: ['now', this.deltaHours, this.deltaHours + 30, this.deltaHours + 60],
       eventDurations: ['5', '15', '30', '45', '60'],
       activeName: '',
@@ -248,46 +257,54 @@ class EventBuilder extends Component {
     return (
       <div className="EventBuilder" onDoubleClick={() => this.closeEventBuilder()} >
         <ConflictEvents error={this.state.errors} />
-        <h2>Please choose event type</h2>
-        <EventNames
-          active={this.state.activeName}
-          itemClick={this.onNameItemClickHandler}
-          names={this.state.eventNames}
-          inputedValue={this.onInputHandler}
-          error={this.state.errors}
-          customClick={this.onCustomNameItemHandler}
-          showCustom={this.state.customNameShow}
-        />
+        <div style={{ opacity: 0.8 }}>
+          <h2>Please choose event type</h2>
+          <EventNames
+            active={this.state.activeName}
+            itemClick={this.onNameItemClickHandler}
+            names={this.state.eventNames}
+            inputedValue={this.onInputHandler}
+            error={this.state.errors}
+            customClick={this.onCustomNameItemHandler}
+            showCustom={this.state.customNameShow}
+          />
+        </div>
 
-        <h2>Please select the start of event</h2>
-        <EventStarts
-          active={this.state.activeEvStart}
-          activeId={this.state.activeEvStartId}
-          itemClick={this.onEvStartItemClickHandler}
-          eventStart={this.state.eventStarts}
-          changeDateTime={this.onChangeDateTimeHandler}
-          error={this.state.errors}
-          customClick={this.onCustomEvStartItemClickHandler}
-          showCustom={this.state.customEvStart}
-        />
+        <div style={{ display: this.state.activeName ? 'block' : 'none' }}>
+          <h2>Please select the start of event</h2>
+          <EventStarts
+            active={this.state.activeEvStart}
+            activeId={this.state.activeEvStartId}
+            itemClick={this.onEvStartItemClickHandler}
+            eventStart={this.state.eventStarts}
+            changeDateTime={this.onChangeDateTimeHandler}
+            error={this.state.errors}
+            customClick={this.onCustomEvStartItemClickHandler}
+            showCustom={this.state.customEvStart}
+          />
+        </div>
 
-        <h2>Please select the duration of the event</h2>
-        <EventDuration
-          active={this.state.activeEvDuration}
-          itemClick={this.onEvDurationItemClickHandler}
-          eventDurations={this.state.eventDurations}
-          changeDateTime={this.onChangeDateTimeHandler}
-          error={this.state.errors}
-          customClick={this.onCustomEvDurationItemClickHandler}
-          showCustom={this.state.customEvDuration}
-        />
+        <div style={{ display: this.state.activeEvStart ? 'block' : 'none' }}>
+          <h2>Please select the duration of the event</h2>
+          <EventDuration
+            active={this.state.activeEvDuration}
+            itemClick={this.onEvDurationItemClickHandler}
+            eventDurations={this.state.eventDurations}
+            changeDateTime={this.onChangeDateTimeHandler}
+            error={this.state.errors}
+            customClick={this.onCustomEvDurationItemClickHandler}
+            showCustom={this.state.customEvDuration}
+          />
+        </div>
         <IdentifyBtn
           clicked={this.identificateUser}
           canceled={this.onClearCreator}
           message={this.newEvent.creator}
           active={this.state.eventCreator}
         />
-        <button className="btn-confirm" onClick={this.onConfirmClickHandler}>Confirm</button>
+        <div style={{ display: this.state.activeEvDuration ? 'block' : 'none' }}>
+          <button className="btn-confirm" onClick={this.onConfirmClickHandler}>Confirm</button>
+        </div>
       </div>
     );
   }

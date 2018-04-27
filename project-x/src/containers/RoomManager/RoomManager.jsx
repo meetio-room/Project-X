@@ -49,7 +49,7 @@ class RoomManager extends Component {
       if (that.state.currentTime.getMinutes() !== time.getMinutes()) {
         that.setState({ currentTime: time });
         const timeToEvent = that.props.events.length > 0 ? Date.parse(that.props.events[0].start) - time : 10e12;
-        if (Device.saveModeEnable && (time.getHours() < config.SLEEP_MODE.end || time.getHours() >= config.SLEEP_MODE.start)) {
+        if (Device.isSaveModeEnable && (time.getHours() < config.SLEEP_MODE.end || time.getHours() >= config.SLEEP_MODE.start)) {
           Device.setMode('SLEEP_MODE');
         } else if (that.props.room.status === 'Busy') {
           Device.setMode('ACTIVE_MODE');

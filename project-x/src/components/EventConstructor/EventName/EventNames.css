@@ -4,21 +4,29 @@
   justify-content: center;
 }
 .EventName-item{
-  padding: 10px 0;
-  margin: 20px;
-  background: yellow;
+  padding: 15px;
+  margin: 2px;
+  background: #f1f1cb;
   border: none;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 20px; 
   text-transform: capitalize;
   border-radius: 15px;
-  width: 130px;
+  width: 170px;
   text-align: center;
+  padding-left: 40px;
+  background-repeat: no-repeat;
+  background-size: 10 10;
+  background-size: 30px 30px;
+  background-position: 11px 14px;
+  opacity: 0.5;
+}
+.EventName-item:last-child{
+  padding-left: 20px;
 }
 .EventName-item-active{
-  background: #0a0303!important;
-  color: white;
-  border: 5px solid red!important;
+  opacity: 1;
+  background-color: white;
 }
 .inputFileds{
   width: 100%;
