@@ -24,6 +24,7 @@ class Settings extends Component {
     localStorage.removeItem('expires_in');
     localStorage.removeItem('events');
     localStorage.removeItem('calendarId');
+    localStorage.removeItem('refreshToken');
     window.plugins.googleplus.logout();
     window.location.reload();
   }

@@ -135,6 +135,38 @@ class Device {
     });
   }
 
+  static switchOnCamera() {
+    const options = {
+      x: 0,
+      y: 0,
+      width: '1',
+      height: '1',
+      camera: window.CameraPreview.CAMERA_DIRECTION.FRONT,
+      toBack: false,
+      tapPhoto: false,
+      tapFocus: false,
+      previewDrag: false,
+    };
+    window.CameraPreview.startCamera(options);
+  }
+  static switchOffCamera() {
+    window.CameraPreview.stopCamera();
+  }
+
+  /**
+   * Get base64 image from camera (require run switchOnCamera() method before )
+   * @returns {string} base64 image
+   */
+  static createRealTimePhoto() {
+    return new Promise((resolve) => {
+      window.CameraPreview.takePicture({
+        width: 640,
+        height: 640,
+        quality: 100,
+      }, base64PictureData => resolve(`${base64PictureData}`));
+    });
+  }
+
   static showAlert(message) {
     navigator.notification.alert(message, null, config.PROGRAM_NAME, 'OK');
   }

@@ -59,6 +59,7 @@ class EventBuilder extends Component {
     this.timer = null;
   }
   componentDidMount() {
+    Device.switchOnCamera();
     const that = this;
     that.timer = setInterval(() => {
       that.deltaHours = 60 - moment().minute();
@@ -74,9 +75,11 @@ class EventBuilder extends Component {
   componentWillUnmount() {
     clearInterval(this.timer);
     this.timer = null;
+    Device.switchOffCamera();
   }
 
   onChangeDateTimeHandler(id, dateTime) {
+    this.identificateUser();
     const errors = { ...this.state.errors };
     if (id === 'event-start') {
       if (dateTime < moment()) {
@@ -104,6 +107,7 @@ class EventBuilder extends Component {
   }
 
   onNameItemClickHandler(sender) {
+    this.identificateUser();
     this.newEvent.summary = sender;
     this.setState({
       customNameShow: false,
@@ -112,6 +116,7 @@ class EventBuilder extends Component {
   }
 
   onCustomNameItemHandler(sender) {
+    this.identificateUser();
     this.newEvent.summary = '';
     this.setState(prevState => ({
       customNameShow: !prevState.customNameShow,
@@ -120,6 +125,7 @@ class EventBuilder extends Component {
   }
 
   onEvStartItemClickHandler(sender, index) {
+    this.identificateUser();
     this.setState({
       activeEvStart: sender,
       activeEvStartId: index,
@@ -138,6 +144,7 @@ class EventBuilder extends Component {
   }
 
   onCustomEvStartItemClickHandler(sender) {
+    this.identificateUser();
     this.newEvent.start = null;
     this.setState(prevState => ({
       customEvStart: !prevState.customEvStart,
@@ -147,6 +154,7 @@ class EventBuilder extends Component {
   }
 
   onEvDurationItemClickHandler(sender) {
+    this.identificateUser();
     this.setState({
       activeEvDuration: sender,
       customEvDuration: false,
@@ -164,6 +172,7 @@ class EventBuilder extends Component {
   }
 
   onCustomEvDurationItemClickHandler(sender) {
+    this.identificateUser();
     this.newEvent.end = null;
     this.setState(prevState => ({
       customEvDuration: !prevState.customEvDuration,
@@ -172,6 +181,7 @@ class EventBuilder extends Component {
   }
 
   onConfirmClickHandler() {
+    this.identificateUser();
     if (!this.newEvent.summary) {
       this.newEvent.summary = 'Event';
     }
@@ -214,15 +224,16 @@ class EventBuilder extends Component {
   }
 
   identificateUser() {
-    Device.createPhoto().then((img) => {
-      Device.showToast('compared...');
-      const that = this;
-      this.props.comparePhoto(img)
-        .then((email) => {
-          [, that.newEvent.creator] = email.split('%%');
-          that.setState({ eventCreator: that.newEvent.creator });
-        });
-    });
+    if (this.newEvent.creator) return;
+    const that = this;
+    Device.createRealTimePhoto()
+      .then((img) => {
+        that.props.comparePhoto(img)
+          .then((email) => {
+            [, that.newEvent.creator] = email.split('%%');
+            that.setState({ eventCreator: that.newEvent.creator });
+          });
+      });
   }
 
   checkEventErrors() {

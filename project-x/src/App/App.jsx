@@ -21,7 +21,6 @@ class App extends Component {
     } else {
       this.props.login();
     }
-    this.props.refreshToken();
     if (this.props.calendarId) {
       this.setCalendarListVisibility(false);
     } else {

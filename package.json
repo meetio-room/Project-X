@@ -19,6 +19,7 @@
         "cordova-plugin-background-mode": "^0.7.2",
         "cordova-plugin-brightness": "^0.2.0",
         "cordova-plugin-camera": "^4.0.2",
+        "cordova-plugin-camera-preview": "^0.9.0",
         "cordova-plugin-crosswalk-webview": "^2.4.0",
         "cordova-plugin-customurlscheme": "^4.3.0",
         "cordova-plugin-device": "^2.0.1",
@@ -57,7 +58,8 @@
             "cordova-plugin-screen-locker": {},
             "cordova-plugin-camera": {},
             "cordova-plugin-kiosk": {},
-            "cordova-plugin-dialogs": {}
+            "cordova-plugin-dialogs": {},
+            "cordova-plugin-camera-preview": {}
         },
         "platforms": [
             "android"
