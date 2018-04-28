@@ -1,15 +1,15 @@
 import React from 'react';
-import CameraIcon from 'react-icons/lib/fa/camera';
 import './IdentifyBtn.css';
 
 /**
- * Use: <IdentifyBtn clicked={event} canceled={event} message="" active={boolean} />
+ * Use: <IdentifyBtn canceled={event} message="" active={boolean} />
  */
 const identifyBtn = props => (
   <div className="IdentifyBtn">
-    <button className="btn-confirm" onClick={props.clicked}><CameraIcon /> Identify</button>
+
     { props.active
       ? <div className="Identify-content">
+        <p className="creator-head">Creator:</p>
         <p>
           {props.message}
         </p>

@@ -308,7 +308,6 @@ class EventBuilder extends Component {
           />
         </div>
         <IdentifyBtn
-          clicked={this.identificateUser}
           canceled={this.onClearCreator}
           message={this.newEvent.creator}
           active={this.state.eventCreator}

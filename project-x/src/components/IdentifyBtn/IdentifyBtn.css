@@ -17,3 +17,7 @@
   display: flex;
   justify-content: center;
 }
+.creator-head{
+  color:red;
+  margin-right: 5px;
+}

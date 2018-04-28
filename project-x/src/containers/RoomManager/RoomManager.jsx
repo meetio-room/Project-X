@@ -79,6 +79,8 @@ class RoomManager extends Component {
       Device.showPrompt('Enter Password:', (result) => {
         if (result.input1 === process.env.REACT_APP_SETTINGS_PASSWORD) {
           this.setState({ isSettingsShow: true });
+        } else {
+          Device.showAlert('Password wrong!');
         }
       });
     });
