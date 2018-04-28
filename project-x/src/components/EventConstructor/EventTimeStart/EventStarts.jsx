@@ -15,7 +15,7 @@ const eventStarts = props => (
             if (props.activeId === index && index !== 0) {
               btnText = moment().add(start, 'minutes').format('HH:mm');
             } else {
-              btnText = isNaN(start) ? start : `+${start}min`;
+              btnText = isNaN(start) ? start : `in ${start}min`;
             }
            return (
              <button
@@ -30,7 +30,7 @@ const eventStarts = props => (
         onClick={() => props.customClick('custom')}
         className={props.active !== 'custom' ? 'EventStart-item' : 'EventStart-item  EventStart-item-active'}
       >
-        custom
+        Custom
       </button>
       { props.showCustom ?
         <div className="inputFileds" >

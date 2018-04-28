@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import CalendarList from '../containers/Calendars/CalendarsList';
 import { login, refreshToken } from '../store/actions/auth';
+import { readUsersFromDb } from '../store/actions/firebase';
 import RoomManager from '../containers/RoomManager/RoomManager';
 import Spinner from '../components/UI/Spinner/Spinner';
 
@@ -21,6 +22,7 @@ class App extends Component {
     } else {
       this.props.login();
     }
+    this.props.readUsersFromDb();
     if (this.props.calendarId) {
       this.setCalendarListVisibility(false);
     } else {
@@ -52,6 +54,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
   login,
   refreshToken,
+  readUsersFromDb,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
