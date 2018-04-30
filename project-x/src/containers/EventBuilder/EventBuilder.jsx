@@ -86,17 +86,16 @@ class EventBuilder extends Component {
         errors.eventStart = 'Error!\n Event start in the past';
       } else {
         errors.eventStart = null;
-        this.newEvent.start = dateTime; // - (dateTime.second() * 1000);
+        this.newEvent.start = dateTime.startOf('minute');
         if (this.state.activeEvDuration && this.state.activeEvDuration !== 'custom') {
           this.newEvent.end = moment(this.newEvent.start).add(this.state.activeEvDuration, 'minutes');
         }
       }
       this.setState({ errors });
     } else if (id === 'event-end') {
-      this.newEvent.end = dateTime - (dateTime.second() * 1000);
+      this.newEvent.end = dateTime.startOf('minute');
       if (!this.newEvent.start) {
-        this.newEvent.start = moment();
-        this.newEvent.start -= this.newEvent.start.second() * 1000;
+        this.newEvent.start = moment().startOf('minute');
         this.setState({
           activeEvStart: 'now',
           activeEvStartId: 0,
@@ -131,12 +130,11 @@ class EventBuilder extends Component {
       activeEvStartId: index,
       customEvStart: false,
     });
-    const curTime = moment();
+    const curTime = moment().startOf('minute');
     this.newEvent.start = curTime;
     if (sender !== 'now') {
       this.newEvent.start = curTime.add(sender, 'minutes');
     }
-    this.newEvent.start -= this.newEvent.start.second() * 1000;
     if (this.state.activeEvDuration) {
       this.newEvent.end = moment(this.newEvent.start).add(this.state.activeEvDuration, 'minutes');
     }
@@ -160,8 +158,7 @@ class EventBuilder extends Component {
       customEvDuration: false,
     });
     if (!this.newEvent.start) {
-      this.newEvent.start = moment();
-      this.newEvent.start -= this.newEvent.start.second() * 1000;
+      this.newEvent.start = moment().startOf('minute');
       this.setState({
         activeEvStart: 'now',
         activeEvStartId: 0,
@@ -191,9 +188,7 @@ class EventBuilder extends Component {
     } else if (this.state.activeEvStart !== 'custom') {
       this.newEvent.start = moment().add(this.state.activeEvStart, 'minutes');
     }
-
-    this.newEvent.start -= this.newEvent.start.second() * 1000;
-    this.newEvent.start = moment(this.newEvent.start);
+    this.newEvent.start = moment(this.newEvent.start).startOf('minute');
     if (this.state.activeEvDuration !== 'custom') {
       this.newEvent.end = moment(this.newEvent.start).add(this.state.activeEvDuration, 'minutes');
     }
@@ -230,8 +225,10 @@ class EventBuilder extends Component {
       .then((img) => {
         that.props.comparePhoto(img)
           .then((email) => {
-            [, that.newEvent.creator] = email.split('%%');
-            that.setState({ eventCreator: that.newEvent.creator });
+            if (that.props.show) {
+              [, that.newEvent.creator] = email.split('%%');
+              that.setState({ eventCreator: that.newEvent.creator });
+            }
           });
       });
   }
